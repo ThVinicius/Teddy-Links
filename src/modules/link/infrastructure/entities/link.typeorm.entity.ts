@@ -17,10 +17,13 @@ export class LinkEntityTypeOrm implements ILinkEntity {
   id: number;
 
   @Column({ type: 'varchar', length: 6, unique: true })
-  short_url: string;
+  short_code: string;
 
   @Column()
   original_url: string;
+
+  @Column({ default: 0 })
+  click_count: number;
 
   @Column()
   user_id: number;

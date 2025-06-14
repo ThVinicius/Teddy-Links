@@ -27,7 +27,7 @@ export class CreateShortenedLinkUseCase {
     try {
       const newLink = await this.linksRepository.createLink({
         original_url,
-        short_url: shortId,
+        short_code: shortId,
         user_id
       });
 

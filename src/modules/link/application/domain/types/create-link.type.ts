@@ -1,5 +1,5 @@
 export interface ICreateLink {
-  short_url: string;
+  short_code: string;
   original_url: string;
   user_id: number;
 }

@@ -1,7 +1,7 @@
 import { BusinessError } from '../errors/business.error';
 import { ILinkRepository } from '../repositories/link.repository.interface';
 
-export class FindLinkUseCase {
+export class RedirectToOriginalUrlUseCase {
   constructor(private readonly linkRepository: ILinkRepository) {}
 
   async execute(shortUrl: string) {
@@ -10,6 +10,9 @@ export class FindLinkUseCase {
     if (!link) {
       throw new BusinessError('Link not found', 404);
     }
+
+    link.click_count++;
+    this.linkRepository.updateLink(link);
 
     return link;
   }

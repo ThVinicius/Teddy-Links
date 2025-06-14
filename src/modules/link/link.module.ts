@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LinkController } from './adapters/controllers/link.controller';
 import { ILinkRepository } from './application/repositories/link.repository.interface';
 import { CreateShortenedLinkUseCase } from './application/use-cases/create-shortened-link.use-case';
-import { FindLinkUseCase } from './application/use-cases/find-link.use-case';
+import { RedirectToOriginalUrlUseCase } from './application/use-cases/redirect-to-original-url.use-case';
 import { UserDeleteLinkUseCase } from './application/use-cases/user-delete-link.use-case';
 import { UserListLinkUseCase } from './application/use-cases/user-list-link.use-case';
 import { UserUpdateLinkUseCase } from './application/use-cases/user-update-link.use-case';
@@ -21,9 +21,9 @@ import { LinkTypeOrmRepository } from './infrastructure/repositories/link.typeor
       inject: ['ILinkRepository']
     },
     {
-      provide: FindLinkUseCase,
+      provide: RedirectToOriginalUrlUseCase,
       useFactory: (linksRepository: ILinkRepository) =>
-        new FindLinkUseCase(linksRepository),
+        new RedirectToOriginalUrlUseCase(linksRepository),
       inject: ['ILinkRepository']
     },
     {

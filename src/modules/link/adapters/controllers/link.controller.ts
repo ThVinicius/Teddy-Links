@@ -11,7 +11,7 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { CreateShortenedLinkUseCase } from '../../application/use-cases/create-shortened-link.use-case';
-import { FindLinkUseCase } from '../../application/use-cases/find-link.use-case';
+import { RedirectToOriginalUrlUseCase } from '../../application/use-cases/redirect-to-original-url.use-case';
 import { CreateShortenedLinkDto } from '../dtos/create-shortened-link.dto';
 import { JWTUserAuthGuard } from '../../../auth/adapters/guards/user-auth.guard';
 import { GetUser } from '../../../auth/adapters/decorators/get-user.decorator';
@@ -25,7 +25,7 @@ import { UpdateLinkDto } from '../dtos/update-link.dto';
 export class LinkController {
   constructor(
     private readonly createShortenedLinkUseCase: CreateShortenedLinkUseCase,
-    private readonly findLinkUseCase: FindLinkUseCase,
+    private readonly redirectToOriginalUrlUseCase: RedirectToOriginalUrlUseCase,
     private readonly userListLinkUseCase: UserListLinkUseCase,
     private readonly userDeleteLinkUseCase: UserDeleteLinkUseCase,
     private readonly userUpdateLinkUseCase: UserUpdateLinkUseCase
@@ -43,7 +43,7 @@ export class LinkController {
   @Get(':shortUrl')
   @Redirect('', HttpStatus.MOVED_PERMANENTLY)
   async findLink(@Param('shortUrl') shortUrl: string) {
-    const link = await this.findLinkUseCase.execute(shortUrl);
+    const link = await this.redirectToOriginalUrlUseCase.execute(shortUrl);
 
     return {
       url: link.original_url

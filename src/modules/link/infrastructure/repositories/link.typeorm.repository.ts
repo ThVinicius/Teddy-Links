@@ -19,7 +19,7 @@ export class LinkTypeOrmRepository implements ILinkRepository {
 
   async findOneByShortUrl(shortUrl: string): Promise<ILinkEntity | null> {
     return await this.repository.findOne({
-      where: { short_url: shortUrl }
+      where: { short_code: shortUrl }
     });
   }
 
