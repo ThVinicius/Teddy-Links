@@ -1,0 +1,77 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { {{servicePascalName}}Service } from './{{serviceKebabName}}.service';
+
+describe('{{servicePascalName}}Service', () => {
+  let service: {{servicePascalName}}Service;
+  // TODO: Declare mocks para as dependências do serviço aqui
+  // Exemplo: let mockOutroRepositorio: jest.Mocked<IOutroRepositorio>;
+
+  beforeEach(async () => {
+    // TODO: Inicialize seus mocks aqui
+    // Exemplo:
+    // mockOutroRepositorio = {
+    //    algumMetodo: jest.fn(),
+    // };
+
+    // Opção 1: Instanciação direta (mais comum para testes unitários puros se não houver dependências complexas do NestJS)
+    // service = new {{servicePascalName}}Service(
+    //    mockOutroRepositorio, // Passe os mocks como argumentos do construtor
+    // );
+
+    // Opção 2: Usando Test.createTestingModule (bom se o serviço usa @Inject() ou depende do ciclo de vida do NestJS)
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        {{servicePascalName}}Service,
+        // TODO: Adicione os providers para os mocks das dependências do serviço.
+        // Se o service injeta 'IOutroRepositorio', você o proveria assim:
+        // {
+        //    provide: 'IOutroRepositorio', // Ou o token de injeção real
+        //    useValue: mockOutroRepositorio,
+        // },
+        // Se o service injeta uma classe diretamente:
+        // {
+        //    provide: OutraClasseService,
+        //    useValue: { metodoDaOutraClasse: jest.fn() },
+        // }
+      ],
+    }).compile();
+
+    service = module.get<{{servicePascalName}}Service>({{servicePascalName}}Service);
+  });
+
+  it('deve estar definido', () => {
+    expect(service).toBeDefined();
+  });
+
+  // TODO: Escreva seus casos de teste específicos para os métodos do {{servicePascalName}}Service.
+  // Exemplo para um método chamado 'fazerAlgumaCoisa':
+  /*
+  describe('fazerAlgumaCoisa', () => {
+    it('deve retornar o resultado esperado quando chamado com sucesso', async () => {
+      // Arrange
+      const input = 'dado de entrada';
+      const expectedResult = 'resultado esperado';
+      // Se o método usa uma dependência mockada:
+      // mockOutroRepositorio.algumMetodo.mockResolvedValue('valor mockado da dependência');
+
+      // Act
+      // const result = await service.fazerAlgumaCoisa(input);
+
+      // Assert
+      // expect(result).toEqual(expectedResult);
+      // expect(mockOutroRepositorio.algumMetodo).toHaveBeenCalledWith(input); // Se aplicável
+      expect(true).toBe(true); // REMOVA ESTE PLACEHOLDER
+    });
+
+    it('deve lançar uma exceção apropriada em caso de erro', async () => {
+      // Arrange
+      // const inputComErro = 'dado que causa erro';
+      // mockOutroRepositorio.algumMetodo.mockRejectedValue(new Error('Erro na dependência'));
+
+      // Act & Assert
+      // await expect(service.fazerAlgumaCoisa(inputComErro)).rejects.toThrow(SuaExcecaoCustomizada || Error);
+      expect(true).toBe(true); // REMOVA ESTE PLACEHOLDER
+    });
+  });
+  */
+});

@@ -1,0 +1,12 @@
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { {{entityPascalName}}EntityTypeOrm } from '../infrastructure/entities/{{entityKebabName}}.typeorm.entity';
+import { I{{entityPascalName}}Repository } from '../application/repositories/{{entityKebabName}}.repository.interface';
+
+export class {{entityPascalName}}TypeOrmRepository implements I{{entityPascalName}}Repository {
+  constructor(
+    @InjectRepository({{entityPascalName}}EntityTypeOrm)
+    readonly repository: Repository<{{entityPascalName}}EntityTypeOrm>,
+  ) {
+  }
+}

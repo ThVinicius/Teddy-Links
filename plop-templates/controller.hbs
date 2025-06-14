@@ -1,0 +1,25 @@
+import { {{commonNestJsImportsString}} } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+{{#if useAuth}}
+import { AuthGuard } from '@nestjs/passport';
+{{/if}}
+{{#each injectedUseCases}}
+import { {{this.className}} } from '{{this.importPath}}';
+{{/each}}
+
+@ApiTags('{{moduleName}}-{{controllerKebabName}}')
+{{#if useAuth}}
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt')) // user-company auth
+{{/if}}
+@Controller({
+  path: '{{moduleName}}-{{controllerKebabName}}',
+  version: '1',
+})
+export class {{controllerPascalName}}Controller {
+  constructor(
+    {{#each injectedUseCases}}
+    private readonly {{this.paramName}}: {{this.className}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  ) {}
+}

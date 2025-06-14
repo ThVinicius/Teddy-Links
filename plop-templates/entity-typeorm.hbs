@@ -1,0 +1,23 @@
+import {
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { I{{entityPascalName}}Entity } from '../domain/entities/{{entityKebabName}}.entity.interface';
+
+@Entity({ name: '{{snakeCase entityName}}' })
+export class {{entityPascalName}}EntityTypeOrm implements I{{entityPascalName}}Entity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt?: Date;
+}

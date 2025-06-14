@@ -1,0 +1,74 @@
+import { {{useCasePascalName}}UseCase } from './{{useCaseKebabName}}.use-case';
+{{#each dependencies}}
+import { {{this.importName}} } from '{{this.importPathForUseCaseFile}}';
+{{/each}}
+
+describe('{{useCasePascalName}}UseCase', () => {
+  let useCase: {{useCasePascalName}}UseCase;
+  {{#each dependencies}}
+  let mock{{this.pascalName}}{{capitalize this.type}}: jest.Mocked<{{this.importName}}>;
+  {{/each}}
+
+  beforeEach(() => {
+    {{#each dependencies}}
+    mock{{this.pascalName}}{{capitalize this.type}} = {
+      // TODO: Adicione mocks para os métodos da interface/classe {{this.importName}}
+      // que são efetivamente chamados pelo {{../useCasePascalName}}UseCase.
+      // Exemplo:
+      // findMany: jest.fn(),
+      // create: jest.fn(),
+      // update: jest.fn(),
+    } as unknown as jest.Mocked<{{this.importName}}>;
+    {{/each}}
+
+    useCase = new {{useCasePascalName}}UseCase(
+      {{#each dependencies}}
+      mock{{this.pascalName}}{{capitalize this.type}}{{#unless @last}},{{/unless}}
+      {{/each}}
+    );
+  });
+
+  it('deve estar definido', () => {
+    expect(useCase).toBeDefined();
+  });
+
+  // TODO: Escreva seus casos de teste específicos aqui.
+  // Veja um exemplo básico abaixo:
+  /*
+  describe('execute', () => {
+    it('deve executar com sucesso com dados válidos', async () => {
+      // Arrange
+      const mockInputData = { // Defina os dados de entrada para o método 'execute'
+        // Ex: id: '123', name: 'Teste'
+      };
+      const mockExpectedResult = { // Defina o resultado esperado
+        // Ex: id: '123', name: 'Teste', status: 'processado'
+      };
+
+      {{#if dependencies}}
+      // Exemplo de como configurar um mock para uma dependência (assumindo que a primeira tenha um método 'algumMetodo'):
+      // {{#with (lookup dependencies 0)}}
+      // if (mock{{this.pascalName}}{{capitalize this.type}}.algumMetodo) { // Verifica se o método existe no mock
+      //  mock{{this.pascalName}}{{capitalize this.type}}.algumMetodo.mockResolvedValue(mockExpectedResult); // ou mockReturnValue para síncrono
+      // }
+      // {{/with}}
+      {{/if}}
+
+      // Act
+      // const result = await useCase.execute(mockInputData); // Ou useCase.execute() se não houver entrada
+
+      // Assert
+      // expect(result).toEqual(mockExpectedResult);
+      {{#if dependencies}}
+      // Exemplo de como verificar se um método mockado foi chamado:
+      // {{#with (lookup dependencies 0)}}
+      // if (mock{{this.pascalName}}{{capitalize this.type}}.algumMetodo) {
+      //   expect(mock{{this.pascalName}}{{capitalize this.type}}.algumMetodo).toHaveBeenCalledWith(mockInputData.algumParametro);
+      // }
+      // {{/with}}
+      {{/if}}
+      expect(true).toBe(true); // REMOVA ESTE PLACEHOLDER E IMPLEMENTE A ASSERÇÃO REAL
+    });
+  });
+  */
+});

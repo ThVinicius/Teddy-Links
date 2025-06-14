@@ -1,0 +1,34 @@
+import { Module } from '@nestjs/common';
+{{#if createController}}
+import { {{controllerPascalName}}Controller } from '{{controllerImportPath}}';
+{{/if}}
+{{#if createEntityAndRepo}}
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { {{typeOrmEntityClassName}} } from '{{typeOrmEntityImportPath}}';
+import { {{repositoryClassName}} } from '{{repositoryClassImportPath}}';
+{{/if}}
+
+@Module({
+  imports: [
+    {{#if createEntityAndRepo}}
+    TypeOrmModule.forFeature([{{typeOrmEntityClassName}}]),
+    {{/if}}
+  ],
+  {{#if createController}}
+  controllers: [{{controllerPascalName}}Controller],
+  {{/if}}
+  providers: [
+    {{#if createEntityAndRepo}}
+    {
+      provide: '{{repositoryInterfaceName}}',
+      useClass: {{repositoryClassName}},
+    },
+    {{/if}}
+  ],
+  exports: [
+    {{#if createEntityAndRepo}}
+    '{{repositoryInterfaceName}}',
+    {{/if}}
+  ],
+})
+export class {{pascalCaseName}}Module {}

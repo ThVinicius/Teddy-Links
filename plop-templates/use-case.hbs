@@ -1,0 +1,15 @@
+{{#each dependencies}}
+import { {{this.importName}} } from '{{this.importPathForUseCaseFile}}';
+{{/each}}
+
+export class {{useCasePascalName}}UseCase {
+  constructor(
+    {{#each dependencies}}
+    private readonly {{this.constructorParamName}}: {{this.constructorParamType}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  ) {}
+
+  execute() {
+    throw new Error('Método execute não implementado.');
+  }
+}
