@@ -5,7 +5,7 @@ export class FindLinkUseCase {
   constructor(private readonly linkRepository: ILinkRepository) {}
 
   async execute(shortUrl: string) {
-    const link = await this.linkRepository.findLinkByShortUrl(shortUrl);
+    const link = await this.linkRepository.findOneByShortUrl(shortUrl);
 
     if (!link) {
       throw new BusinessError('Link not found', 404);

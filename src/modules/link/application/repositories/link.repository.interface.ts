@@ -3,5 +3,6 @@ import { ICreateLink } from '../domain/types/create-link.type';
 
 export interface ILinkRepository {
   createLink(data: ICreateLink): Promise<ILinkEntity>;
+  findOneByShortUrl(shortUrl: string): Promise<ILinkEntity | null>;
   findLinkByShortUrl(shortUrl: string): Promise<ILinkEntity | null>;
 }

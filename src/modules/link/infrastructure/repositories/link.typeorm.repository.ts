@@ -17,7 +17,7 @@ export class LinkTypeOrmRepository implements ILinkRepository {
     return await this.repository.save(linkEntity);
   }
 
-  async findLinkByShortUrl(shortUrl: string): Promise<ILinkEntity | null> {
+  async findOneByShortUrl(shortUrl: string): Promise<ILinkEntity | null> {
     return await this.repository.findOne({
       where: { short_url: shortUrl }
     });
