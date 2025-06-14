@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,7 +10,9 @@ import { CreateUserUseCase } from './application/use-cases/create-user.use-case'
 import { UserEntityTypeOrm } from './infrastructure/entities/user.typeorm.entity';
 import { UserTypeOrmRepository } from './infrastructure/repositories/user.typeorm.repository';
 import { AuthService } from './infrastructure/services/auth.service';
+import { UserJwtStrategy } from './infrastructure/services/auth-strategy.service';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntityTypeOrm]),
@@ -24,6 +26,7 @@ import { AuthService } from './infrastructure/services/auth.service';
     })
   ],
   providers: [
+    UserJwtStrategy,
     { provide: 'IUserRepository', useClass: UserTypeOrmRepository },
     {
       provide: CreateUserUseCase,

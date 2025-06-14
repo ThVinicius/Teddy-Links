@@ -9,12 +9,13 @@ export class CreateShortenedLinkUseCase {
 
   constructor(private readonly linksRepository: ILinkRepository) {}
 
-  async execute(original_url: string): Promise<ILinkEntity> {
-    return await this.createUniqueLink(original_url, this.MAX_RETRIES);
+  async execute(original_url: string, user_id: number): Promise<ILinkEntity> {
+    return await this.createUniqueLink(original_url, user_id, this.MAX_RETRIES);
   }
 
   private async createUniqueLink(
     original_url: string,
+    user_id: number,
     retries: number
   ): Promise<ILinkEntity> {
     if (retries === 0) {
@@ -26,7 +27,8 @@ export class CreateShortenedLinkUseCase {
     try {
       const newLink = await this.linksRepository.createLink({
         original_url,
-        short_url: shortId
+        short_url: shortId,
+        user_id
       });
 
       return newLink;
@@ -37,7 +39,7 @@ export class CreateShortenedLinkUseCase {
         'code' in error &&
         (error as { code?: string }).code === '23505'
       ) {
-        return await this.createUniqueLink(original_url, retries - 1);
+        return await this.createUniqueLink(original_url, user_id, retries - 1);
       }
 
       throw error;
