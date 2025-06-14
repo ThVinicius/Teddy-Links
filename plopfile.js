@@ -5,26 +5,26 @@ const { Project, SyntaxKind } = require('ts-morph');
 
 module.exports = function (plop) {
   plop.setHelper('eq', (v1, v2) => v1 === v2);
-  plop.setHelper('capitalize', (text) => {
+  plop.setHelper('capitalize', text => {
     if (typeof text !== 'string' || text.length === 0) {
       return '';
     }
     return text.charAt(0).toUpperCase() + text.slice(1);
   });
 
-  plop.setHelper('snakeCase', (text) => {
+  plop.setHelper('snakeCase', text => {
     if (typeof text !== 'string' || !text) return '';
     return text.replace(/-/g, '_');
   });
 
-  plop.setHelper('camelCase', (str) => {
+  plop.setHelper('camelCase', str => {
     if (typeof str !== 'string' || !str) return '';
     return str
       .toLowerCase()
       .replace(/-([a-z0-9])/g, (match, group1) => group1.toUpperCase());
   });
 
-  plop.setHelper('pascalCase', (str) => {
+  plop.setHelper('pascalCase', str => {
     if (typeof str !== 'string' || !str) return '';
     const camel = str
       .toLowerCase()
@@ -32,7 +32,7 @@ module.exports = function (plop) {
     return camel.charAt(0).toUpperCase() + camel.slice(1);
   });
 
-  plop.setHelper('kebabCase', (str) => {
+  plop.setHelper('kebabCase', str => {
     if (typeof str !== 'string' || !str) return '';
     return str.replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1-$2').toLowerCase();
   });
@@ -41,7 +41,7 @@ module.exports = function (plop) {
     const absoluteFilePath = join(process.cwd(), filePath);
     if (!existsSync(absoluteFilePath)) {
       console.warn(
-        `[Prettier] Arquivo não encontrado para formatação: ${absoluteFilePath}`,
+        `[Prettier] Arquivo não encontrado para formatação: ${absoluteFilePath}`
       );
       return;
     }
@@ -49,19 +49,19 @@ module.exports = function (plop) {
       execSync(`npx prettier --check "${absoluteFilePath}"`, {
         stdio: 'pipe',
         shell: true,
-        cwd: process.cwd(),
+        cwd: process.cwd()
       });
     } catch (checkError) {
       try {
         execSync(`npx prettier --write "${absoluteFilePath}"`, {
           stdio: 'pipe',
           shell: true,
-          cwd: process.cwd(),
+          cwd: process.cwd()
         });
       } catch (writeError) {
         console.error(
           `[Prettier] ❌ Erro ao formatar ${absoluteFilePath}:`,
-          writeError.message,
+          writeError.message
         );
       }
     }
@@ -74,11 +74,11 @@ module.exports = function (plop) {
         return [];
       }
       let dirs = readdirSync(absoluteSourcePath, { withFileTypes: true })
-        .filter((dirent) => dirent.isDirectory() && dirent.name)
-        .map((dirent) => dirent.name)
-        .filter((name) => typeof name === 'string' && name.trim() !== '');
+        .filter(dirent => dirent.isDirectory() && dirent.name)
+        .map(dirent => dirent.name)
+        .filter(name => typeof name === 'string' && name.trim() !== '');
       if (filterOut.length > 0) {
-        dirs = dirs.filter((dir) => !filterOut.includes(dir));
+        dirs = dirs.filter(dir => !filterOut.includes(dir));
       }
       return dirs;
     } catch (err) {
@@ -101,9 +101,7 @@ module.exports = function (plop) {
       return [];
     }
     try {
-      return readdirSync(absoluteDirPath).filter((file) =>
-        file.endsWith(suffix),
-      );
+      return readdirSync(absoluteDirPath).filter(file => file.endsWith(suffix));
     } catch (error) {
       console.error(`Erro ao ler o diretório ${absoluteDirPath}:`, error);
       return [];
@@ -116,12 +114,12 @@ module.exports = function (plop) {
     const choices = [];
 
     // Adiciona todos os módulos principais (raiz), excluindo "shared"
-    mainModuleNames.forEach((mainModuleName) => {
+    mainModuleNames.forEach(mainModuleName => {
       if (mainModuleName === 'shared') return; // 'shared' não é mais uma opção para seleção
       const moduleFilePath = join(
         modulesBaseDirRelative,
         mainModuleName,
-        `${mainModuleName}.module.ts`,
+        `${mainModuleName}.module.ts`
       );
       if (existsSync(join(process.cwd(), moduleFilePath))) {
         choices.push({
@@ -130,15 +128,15 @@ module.exports = function (plop) {
             moduleFilePath: moduleFilePath,
             logicBasePath: `src/modules/${mainModuleName}`,
             isRootModule: true,
-            ownerName: mainModuleName, // Para referências internas no gerador
-          },
+            ownerName: mainModuleName // Para referências internas no gerador
+          }
         });
       }
     });
 
     if (choices.length === 0) {
       throw new Error(
-        'Nenhum módulo principal (raiz) foi encontrado. Crie um módulo principal primeiro com o gerador "modulo".',
+        'Nenhum módulo principal (raiz) foi encontrado. Crie um módulo principal primeiro com o gerador "modulo".'
       );
     }
     return choices;
@@ -153,7 +151,7 @@ module.exports = function (plop) {
         type: 'input',
         name: 'moduleName',
         message: 'Nome do novo módulo raiz (kebab-case, ex: "billing"):',
-        validate: (value) => {
+        validate: value => {
           const name = plop.getHelper('kebabCase')(value.trim());
           if (name.length === 0) return 'O nome é obrigatório.';
           if (name.toLowerCase() === 'shared')
@@ -163,8 +161,8 @@ module.exports = function (plop) {
           if (existsSync(join(process.cwd(), 'src/modules', name)))
             return `Módulo/diretório "${name}" já existe.`;
           return true;
-        },
-      },
+        }
+      }
     ],
     actions: function (data) {
       const actions = [];
@@ -175,14 +173,14 @@ module.exports = function (plop) {
       const moduleFilePath = `${basePath}/${kebabModuleName}.module.ts`;
 
       const templateData = {
-        pascalCaseName: pascalCaseModuleName,
+        pascalCaseName: pascalCaseModuleName
       };
 
       actions.push({
         type: 'add',
         path: moduleFilePath,
         templateFile: 'plop-templates/module.hbs',
-        data: templateData,
+        data: templateData
       });
 
       const appModulePath = 'src/app.module.ts';
@@ -192,38 +190,38 @@ module.exports = function (plop) {
         transform: (content, answers) => {
           const proj = new Project({
             useInMemoryFileSystem: false,
-            tsConfigFilePath: join(process.cwd(), 'tsconfig.json'),
+            tsConfigFilePath: join(process.cwd(), 'tsconfig.json')
           });
           const absPath = join(process.cwd(), appModulePath);
           const sf =
             proj.addSourceFileAtPathIfExists(absPath) ||
             proj.createSourceFile(absPath, content);
           const currentKebabModuleName = plop.getHelper('kebabCase')(
-            answers.moduleName,
+            answers.moduleName
           );
           const currentPascalModuleName = plop.getHelper('pascalCase')(
-            currentKebabModuleName,
+            currentKebabModuleName
           );
           const classNameForNewModule = `${currentPascalModuleName}Module`;
           const importPathForNewModule = `./modules/${currentKebabModuleName}/${currentKebabModuleName}.module`;
 
           if (
             !sf.getImportDeclaration(
-              (i) =>
+              i =>
                 i.getModuleSpecifierValue() === importPathForNewModule &&
                 i
                   .getNamedImports()
-                  .some((n) => n.getName() === classNameForNewModule),
+                  .some(n => n.getName() === classNameForNewModule)
             )
           ) {
             sf.addImportDeclaration({
               namedImports: [classNameForNewModule],
-              moduleSpecifier: importPathForNewModule,
+              moduleSpecifier: importPathForNewModule
             });
           }
           const dec = sf
             .getDescendantsOfKind(SyntaxKind.Decorator)
-            .find((d) => d.getName() === 'Module');
+            .find(d => d.getName() === 'Module');
           if (dec) {
             const modArgs = dec.getArguments()[0];
             if (
@@ -235,16 +233,16 @@ module.exports = function (plop) {
               if (!impProp)
                 impProp = objLit.addPropertyAssignment({
                   name: 'imports',
-                  initializer: '[]',
+                  initializer: '[]'
                 });
               const arrLit = impProp.getInitializerIfKind(
-                SyntaxKind.ArrayLiteralExpression,
+                SyntaxKind.ArrayLiteralExpression
               );
               if (
                 arrLit &&
                 !arrLit
                   .getElements()
-                  .some((e) => e.getText() === classNameForNewModule)
+                  .some(e => e.getText() === classNameForNewModule)
               )
                 arrLit.addElement(classNameForNewModule);
             }
@@ -258,14 +256,14 @@ module.exports = function (plop) {
             console.error(`Erro app.module ${appModulePath}:`, e);
             return sf.getFullText();
           }
-        },
+        }
       });
       actions.push(async () => {
         runPrettier(moduleFilePath);
         return `Módulo raiz ${kebabModuleName} criado. app.module.ts modificado.`;
       });
       return actions;
-    },
+    }
   });
 
   // --- GERADOR DE SERVICE ---
@@ -277,7 +275,7 @@ module.exports = function (plop) {
         type: 'list',
         name: 'targetModuleInfo',
         message: 'Para qual MÓDULO PRINCIPAL este service será associado?',
-        choices: getModuleChoices,
+        choices: getModuleChoices
       },
       {
         type: 'input',
@@ -290,13 +288,13 @@ module.exports = function (plop) {
             process.cwd(),
             ans.targetModuleInfo.logicBasePath,
             'application/services',
-            `${sName}.interface.ts`,
+            `${sName}.interface.ts`
           );
           if (existsSync(sPath))
             return `Service ${sName} já existe em ${ans.targetModuleInfo.logicBasePath}.`;
           return true;
-        },
-      },
+        }
+      }
     ],
     actions: function (data) {
       const actions = [];
@@ -311,7 +309,7 @@ module.exports = function (plop) {
         serviceKebabName: sKebab,
         servicePascalName: sPascal,
         serviceInterfaceName: sInterfaceName,
-        serviceClassName: `${sPascal}Service`,
+        serviceClassName: `${sPascal}Service`
       };
       ensureDirectoryExists(appPath);
       ensureDirectoryExists(infraPath);
@@ -320,34 +318,34 @@ module.exports = function (plop) {
         type: 'add',
         path: ifPath,
         templateFile: 'plop-templates/service.interface.hbs',
-        data: tData,
+        data: tData
       });
       const srvPath = `${infraPath}/${sKebab}.service.ts`;
       actions.push({
         type: 'add',
         path: srvPath,
         templateFile: 'plop-templates/service.hbs',
-        data: tData,
+        data: tData
       });
       const specPath = `${infraPath}/${sKebab}.service.spec.ts`;
       actions.push({
         type: 'add',
         path: specPath,
         templateFile: 'plop-templates/service.spec.hbs',
-        data: tData,
+        data: tData
       });
       actions.push({
         type: 'modify',
         path: targetModuleInfo.moduleFilePath,
-        transform: (content) => {
+        transform: content => {
           const proj = new Project({
             useInMemoryFileSystem: false,
-            tsConfigFilePath: join(process.cwd(), 'tsconfig.json'),
+            tsConfigFilePath: join(process.cwd(), 'tsconfig.json')
           });
           const absPath = join(process.cwd(), targetModuleInfo.moduleFilePath);
           if (!existsSync(absPath))
             throw new Error(
-              `Módulo ${targetModuleInfo.moduleFilePath} não encontrado.`,
+              `Módulo ${targetModuleInfo.moduleFilePath} não encontrado.`
             );
           const sf = proj.addSourceFileAtPath(absPath);
 
@@ -356,31 +354,31 @@ module.exports = function (plop) {
 
           if (
             !sf.getImportDeclaration(
-              (i) =>
+              i =>
                 i.getModuleSpecifierValue() === ifImport &&
-                i.getNamedImports().some((n) => n.getName() === sInterfaceName),
+                i.getNamedImports().some(n => n.getName() === sInterfaceName)
             )
           )
             sf.addImportDeclaration({
               namedImports: [sInterfaceName],
-              moduleSpecifier: ifImport,
+              moduleSpecifier: ifImport
             });
           if (
             !sf.getImportDeclaration(
-              (i) =>
+              i =>
                 i.getModuleSpecifierValue() === clsImport &&
                 i
                   .getNamedImports()
-                  .some((n) => n.getName() === tData.serviceClassName),
+                  .some(n => n.getName() === tData.serviceClassName)
             )
           )
             sf.addImportDeclaration({
               namedImports: [tData.serviceClassName],
-              moduleSpecifier: clsImport,
+              moduleSpecifier: clsImport
             });
           const dec = sf
             .getDescendantsOfKind(SyntaxKind.Decorator)
-            .find((d) => d.getName() === 'Module');
+            .find(d => d.getName() === 'Module');
           if (dec) {
             const modArgs = dec.getArguments()[0];
             if (
@@ -392,32 +390,32 @@ module.exports = function (plop) {
               if (!provProp)
                 provProp = objLit.addPropertyAssignment({
                   name: 'providers',
-                  initializer: '[]',
+                  initializer: '[]'
                 });
               const provArr = provProp.getInitializerIfKind(
-                SyntaxKind.ArrayLiteralExpression,
+                SyntaxKind.ArrayLiteralExpression
               );
               const provEntry = `{ provide: '${sInterfaceName}', useClass: ${tData.serviceClassName} }`;
               if (
                 provArr &&
                 !provArr
                   .getElements()
-                  .some((e) => e.getText().includes(`'${sInterfaceName}'`))
+                  .some(e => e.getText().includes(`'${sInterfaceName}'`))
               )
                 provArr.addElement(provEntry);
               let expProp = objLit.getProperty('exports');
               if (!expProp)
                 expProp = objLit.addPropertyAssignment({
                   name: 'exports',
-                  initializer: '[]',
+                  initializer: '[]'
                 });
               const expArr = expProp.getInitializerIfKind(
-                SyntaxKind.ArrayLiteralExpression,
+                SyntaxKind.ArrayLiteralExpression
               );
               const expEntry = `'${sInterfaceName}'`;
               if (
                 expArr &&
-                !expArr.getElements().some((e) => e.getText() === expEntry)
+                !expArr.getElements().some(e => e.getText() === expEntry)
               )
                 expArr.addElement(expEntry);
             }
@@ -431,7 +429,7 @@ module.exports = function (plop) {
             console.error(`Erro ${targetModuleInfo.moduleFilePath}:`, e);
             return sf.getFullText();
           }
-        },
+        }
       });
       actions.push(async () => {
         runPrettier(ifPath);
@@ -440,7 +438,7 @@ module.exports = function (plop) {
         return 'Service criado e módulo atualizado.';
       });
       return actions;
-    },
+    }
   });
 
   // --- GERADOR DE CONTROLLER ---
@@ -451,7 +449,7 @@ module.exports = function (plop) {
         type: 'list',
         name: 'targetModuleInfo',
         message: 'Em qual MÓDULO PRINCIPAL você deseja declarar o controller?',
-        choices: getModuleChoices,
+        choices: getModuleChoices
       },
       {
         type: 'input',
@@ -464,39 +462,34 @@ module.exports = function (plop) {
             process.cwd(),
             ans.targetModuleInfo.logicBasePath,
             'adapters/controllers',
-            `${cName}.controller.ts`,
+            `${cName}.controller.ts`
           );
           if (existsSync(cPath))
             return `Controller ${cName} já existe em ${ans.targetModuleInfo.logicBasePath}.`;
           return true;
-        },
+        }
       },
-      {
-        type: 'confirm',
-        name: 'useAuth',
-        message: 'Adicionar autenticação user-company?',
-        default: true,
-      },
+      // REMOVIDO: { type: 'confirm', name: 'useAuth', message: 'Adicionar autenticação user-company?', default: true, },
       {
         type: 'confirm',
         name: 'injectUseCasesPrompt',
         message: 'Injetar use cases?',
         default: false,
-        when: (ans) =>
+        when: ans =>
           listFilesBySuffix(
             join(ans.targetModuleInfo.logicBasePath, 'application/use-cases'),
-            '.use-case.ts',
-          ).length > 0,
+            '.use-case.ts'
+          ).length > 0
       },
       {
         type: 'checkbox',
         name: 'selectedUseCases',
         message: 'Quais use cases injetar?',
-        when: (ans) => ans.injectUseCasesPrompt,
-        choices: (ans) => {
+        when: ans => ans.injectUseCasesPrompt,
+        choices: ans => {
           const ucPath = join(
             ans.targetModuleInfo.logicBasePath,
-            'application/use-cases',
+            'application/use-cases'
           );
           const ucFiles = listFilesBySuffix(ucPath, '.use-case.ts');
           if (ucFiles.length === 0)
@@ -504,52 +497,51 @@ module.exports = function (plop) {
               {
                 name: 'Nenhum use case encontrado.',
                 value: null,
-                disabled: true,
-              },
+                disabled: true
+              }
             ];
-          return ucFiles.map((f) => {
+          return ucFiles.map(f => {
             const k = f.replace('.use-case.ts', '');
             const p = plop.getHelper('pascalCase')(k);
             return {
               name: `${p}UseCase`,
-              value: { kebabName: k, pascalName: p, className: `${p}UseCase` },
+              value: { kebabName: k, pascalName: p, className: `${p}UseCase` }
             };
           });
         },
         validate: (ansVal, ansAll) =>
           ansAll.injectUseCasesPrompt && (!ansVal || ansVal.length === 0)
             ? 'Selecione ao menos um use case.'
-            : true,
-      },
+            : true
+      }
     ],
     actions: function (data) {
       const actions = [];
-      const { targetModuleInfo, controllerName, useAuth, selectedUseCases } =
-        data;
+      // REMOVIDO: const { targetModuleInfo, controllerName, useAuth, selectedUseCases } = data;
+      const { targetModuleInfo, controllerName, selectedUseCases } = data; // useAuth removido
       const ctrlKebab = plop.getHelper('kebabCase')(controllerName);
       const ctrlPascal = plop.getHelper('pascalCase')(ctrlKebab);
       const ctrlDestPath = `${targetModuleInfo.logicBasePath}/adapters/controllers`;
       const injectedUCs = [];
       if (selectedUseCases && selectedUseCases.length > 0) {
-        selectedUseCases.forEach((uc) =>
+        selectedUseCases.forEach(uc =>
           injectedUCs.push({
             className: uc.className,
             paramName: `${plop.getHelper('camelCase')(uc.pascalName)}UseCase`,
-            importPath: `../../application/use-cases/${uc.kebabName}.use-case`,
-          }),
+            importPath: `../../application/use-cases/${uc.kebabName}.use-case`
+          })
         );
       }
       const tData = {
         ...data,
-        moduleName: targetModuleInfo.ownerName, // Now it's the root module name
+        moduleName: targetModuleInfo.ownerName,
         controllerKebabName: ctrlKebab,
         controllerPascalName: ctrlPascal,
-        useAuth: useAuth,
-        commonNestJsImportsString: useAuth
-          ? 'Controller, UseGuards'
-          : 'Controller',
+        // REMOVIDO: useAuth: useAuth,
+        // commonNestJsImportsString agora fixo em 'Controller'
+        commonNestJsImportsString: 'Controller',
         injectedUseCases: injectedUCs,
-        hasInjectedUseCases: injectedUCs.length > 0,
+        hasInjectedUseCases: injectedUCs.length > 0
       };
 
       ensureDirectoryExists(ctrlDestPath);
@@ -558,21 +550,21 @@ module.exports = function (plop) {
         type: 'add',
         path: ctrlFilePath,
         templateFile: 'plop-templates/controller.hbs',
-        data: tData,
+        data: tData
       });
 
       actions.push({
         type: 'modify',
         path: targetModuleInfo.moduleFilePath,
-        transform: (content) => {
+        transform: content => {
           const proj = new Project({
             useInMemoryFileSystem: false,
-            tsConfigFilePath: join(process.cwd(), 'tsconfig.json'),
+            tsConfigFilePath: join(process.cwd(), 'tsconfig.json')
           });
           const absPath = join(process.cwd(), targetModuleInfo.moduleFilePath);
           if (!existsSync(absPath))
             throw new Error(
-              `Módulo ${targetModuleInfo.moduleFilePath} não encontrado.`,
+              `Módulo ${targetModuleInfo.moduleFilePath} não encontrado.`
             );
           const sf = proj.addSourceFileAtPath(absPath);
 
@@ -580,21 +572,21 @@ module.exports = function (plop) {
 
           if (
             !sf.getImportDeclaration(
-              (i) =>
+              i =>
                 i.getModuleSpecifierValue() === ctrlImportPath &&
                 i
                   .getNamedImports()
-                  .some((n) => n.getName() === `${ctrlPascal}Controller`),
+                  .some(n => n.getName() === `${ctrlPascal}Controller`)
             )
           ) {
             sf.addImportDeclaration({
               namedImports: [`${ctrlPascal}Controller`],
-              moduleSpecifier: ctrlImportPath,
+              moduleSpecifier: ctrlImportPath
             });
           }
           const dec = sf
             .getDescendantsOfKind(SyntaxKind.Decorator)
-            .find((d) => d.getName() === 'Module');
+            .find(d => d.getName() === 'Module');
           if (dec) {
             const modArgs = dec.getArguments()[0];
             if (
@@ -606,16 +598,16 @@ module.exports = function (plop) {
               if (!ctlProp)
                 ctlProp = objLit.addPropertyAssignment({
                   name: 'controllers',
-                  initializer: '[]',
+                  initializer: '[]'
                 });
               const ctlArr = ctlProp.getInitializerIfKind(
-                SyntaxKind.ArrayLiteralExpression,
+                SyntaxKind.ArrayLiteralExpression
               );
               if (
                 ctlArr &&
                 !ctlArr
                   .getElements()
-                  .some((e) => e.getText() === `${ctrlPascal}Controller`)
+                  .some(e => e.getText() === `${ctrlPascal}Controller`)
               )
                 ctlArr.addElement(`${ctrlPascal}Controller`);
             }
@@ -629,14 +621,14 @@ module.exports = function (plop) {
             console.error(`Erro ${targetModuleInfo.moduleFilePath}:`, e);
             return sf.getFullText();
           }
-        },
+        }
       });
       actions.push(async () => {
         runPrettier(ctrlFilePath);
         return 'Controller criado e módulo atualizado.';
       });
       return actions;
-    },
+    }
   });
 
   // --- GERADOR DE USE-CASE ---
@@ -647,7 +639,7 @@ module.exports = function (plop) {
         type: 'list',
         name: 'targetModuleInfo',
         message: 'Em qual MÓDULO PRINCIPAL você deseja declarar o use case?',
-        choices: getModuleChoices,
+        choices: getModuleChoices
       },
       {
         type: 'input',
@@ -660,32 +652,32 @@ module.exports = function (plop) {
             process.cwd(),
             ans.targetModuleInfo.logicBasePath,
             'application/use-cases', // Use-cases já estão dentro de application
-            `${ucName}.use-case.ts`,
+            `${ucName}.use-case.ts`
           );
           if (existsSync(ucPath))
             return `Use case ${ucName} já existe em ${ans.targetModuleInfo.logicBasePath}.`;
           return true;
-        },
+        }
       },
       {
         type: 'confirm',
         name: 'useDependencies',
         message: 'Use case usará dependências (repos/serviços)?',
-        default: true,
+        default: true
       },
       {
         type: 'checkbox',
         name: 'selectedDependencies',
         message: 'Quais dependências injetar?',
-        when: (ans) => ans.useDependencies,
-        choices: (ans) => {
+        when: ans => ans.useDependencies,
+        choices: ans => {
           const logicBasePath = ans.targetModuleInfo.logicBasePath;
           const allDeps = [];
           const createDepChoiceValue = (
             kebabName,
             pascalName,
             type,
-            interfaceName,
+            interfaceName
           ) => {
             let componentPathPartWithoutApp;
             // Caminho para interfaces de repositório (agora dentro de application/domain/entities)
@@ -713,26 +705,26 @@ module.exports = function (plop) {
               type,
               interfaceName,
               importPathForModuleFile: importPathForModuleFile,
-              importPathForUseCaseItself: importPathForUseCaseItself,
+              importPathForUseCaseItself: importPathForUseCaseItself
             };
           };
 
           listFilesBySuffix(
             join(logicBasePath, 'application/repositories'),
-            '.repository.interface.ts',
-          ).forEach((f) => {
+            '.repository.interface.ts'
+          ).forEach(f => {
             const k = f.replace('.repository.interface.ts', '');
             const p = plop.getHelper('pascalCase')(k);
             const iName = `I${p}Repository`;
             allDeps.push({
               name: `Repo: ${iName}`,
-              value: createDepChoiceValue(k, p, 'repository', iName),
+              value: createDepChoiceValue(k, p, 'repository', iName)
             });
           });
           listFilesBySuffix(
             join(logicBasePath, 'application/services'),
-            '.interface.ts',
-          ).forEach((f) => {
+            '.interface.ts'
+          ).forEach(f => {
             const k = f
               .replace('.interface.ts', '')
               .replace('.service.interface.ts', '');
@@ -740,7 +732,7 @@ module.exports = function (plop) {
             const iName = `I${p}Service`;
             allDeps.push({
               name: `Serviço: ${iName}`,
-              value: createDepChoiceValue(k, p, 'service', iName),
+              value: createDepChoiceValue(k, p, 'service', iName)
             });
           });
 
@@ -749,16 +741,16 @@ module.exports = function (plop) {
               {
                 name: 'Nenhuma dependência encontrada.',
                 value: null,
-                disabled: true,
-              },
+                disabled: true
+              }
             ];
           return allDeps;
         },
         validate: (ansVal, ansAll) =>
           ansAll.useDependencies && (!ansVal || ansVal.length === 0)
             ? 'Selecione ao menos uma dependência.'
-            : true,
-      },
+            : true
+      }
     ],
     actions: function (data) {
       const actions = [];
@@ -768,14 +760,14 @@ module.exports = function (plop) {
       const ucDestPath = `${targetModuleInfo.logicBasePath}/application/use-cases`;
       const depsForTmpl = [];
       if (data.useDependencies && selectedDependencies) {
-        selectedDependencies.forEach((depValueObject) => {
+        selectedDependencies.forEach(depValueObject => {
           depsForTmpl.push({
             importName: depValueObject.interfaceName,
             constructorParamName: `${plop.getHelper('camelCase')(depValueObject.pascalName)}${depValueObject.type === 'repository' ? 'Repository' : 'Service'}`,
             constructorParamType: depValueObject.interfaceName,
             injectionTokenForFactory: `'${depValueObject.interfaceName}'`,
             importPathForUseCaseFile: depValueObject.importPathForUseCaseItself,
-            importPathForModuleFile: depValueObject.importPathForModuleFile,
+            importPathForModuleFile: depValueObject.importPathForModuleFile
           });
         });
       }
@@ -786,14 +778,14 @@ module.exports = function (plop) {
         dependencies: depsForTmpl,
         hasDependencies: depsForTmpl.length > 0,
         factoryParamsStringWithTypes: depsForTmpl
-          .map((d) => `${d.constructorParamName}: ${d.constructorParamType}`)
+          .map(d => `${d.constructorParamName}: ${d.constructorParamType}`)
           .join(', '),
         factoryConstructorArgsString: depsForTmpl
-          .map((d) => d.constructorParamName)
+          .map(d => d.constructorParamName)
           .join(', '),
         injectTokensString: depsForTmpl
-          .map((d) => d.injectionTokenForFactory)
-          .join(', '),
+          .map(d => d.injectionTokenForFactory)
+          .join(', ')
       };
       ensureDirectoryExists(ucDestPath);
       const ucFilePath = `${ucDestPath}/${ucKebab}.use-case.ts`;
@@ -801,27 +793,27 @@ module.exports = function (plop) {
         type: 'add',
         path: ucFilePath,
         templateFile: 'plop-templates/use-case.hbs',
-        data: tData,
+        data: tData
       });
       const specFilePath = `${ucDestPath}/${ucKebab}.use-case.spec.ts`;
       actions.push({
         type: 'add',
         path: specFilePath,
         templateFile: 'plop-templates/use-case.spec.hbs', // Changed to the correct spec template
-        data: tData,
+        data: tData
       });
       actions.push({
         type: 'modify',
         path: targetModuleInfo.moduleFilePath,
-        transform: (content) => {
+        transform: content => {
           const proj = new Project({
             useInMemoryFileSystem: false,
-            tsConfigFilePath: join(process.cwd(), 'tsconfig.json'),
+            tsConfigFilePath: join(process.cwd(), 'tsconfig.json')
           });
           const absPath = join(process.cwd(), targetModuleInfo.moduleFilePath);
           if (!existsSync(absPath))
             throw new Error(
-              `Módulo ${targetModuleInfo.moduleFilePath} não encontrado.`,
+              `Módulo ${targetModuleInfo.moduleFilePath} não encontrado.`
             );
           const sf = proj.addSourceFileAtPath(absPath);
 
@@ -831,33 +823,31 @@ module.exports = function (plop) {
 
           if (
             !sf.getImportDeclaration(
-              (i) =>
+              i =>
                 i.getModuleSpecifierValue() === ucImpPath &&
-                i.getNamedImports().some((n) => n.getName() === ucClsName),
+                i.getNamedImports().some(n => n.getName() === ucClsName)
             )
           )
             sf.addImportDeclaration({
               namedImports: [ucClsName],
-              moduleSpecifier: ucImpPath,
+              moduleSpecifier: ucImpPath
             });
-          depsForTmpl.forEach((dep) => {
+          depsForTmpl.forEach(dep => {
             if (
               !sf.getImportDeclaration(
-                (i) =>
+                i =>
                   i.getModuleSpecifierValue() === dep.importPathForModuleFile &&
-                  i
-                    .getNamedImports()
-                    .some((n) => n.getName() === dep.importName),
+                  i.getNamedImports().some(n => n.getName() === dep.importName)
               )
             )
               sf.addImportDeclaration({
                 namedImports: [dep.importName],
-                moduleSpecifier: dep.importPathForModuleFile,
+                moduleSpecifier: dep.importPathForModuleFile
               });
           });
           const dec = sf
             .getDescendantsOfKind(SyntaxKind.Decorator)
-            .find((d) => d.getName() === 'Module');
+            .find(d => d.getName() === 'Module');
           if (dec) {
             const modArgs = dec.getArguments()[0];
             if (
@@ -869,16 +859,16 @@ module.exports = function (plop) {
               if (!provProp)
                 provProp = objLit.addPropertyAssignment({
                   name: 'providers',
-                  initializer: '[]',
+                  initializer: '[]'
                 });
               const provArr = provProp.getInitializerIfKind(
-                SyntaxKind.ArrayLiteralExpression,
+                SyntaxKind.ArrayLiteralExpression
               );
               if (
                 provArr &&
                 !provArr
                   .getElements()
-                  .some((e) => e.getText().includes(ucClsName))
+                  .some(e => e.getText().includes(ucClsName))
               ) {
                 let provEntry = ucClsName;
                 if (tData.hasDependencies)
@@ -889,14 +879,14 @@ module.exports = function (plop) {
               if (!expProp)
                 expProp = objLit.addPropertyAssignment({
                   name: 'exports',
-                  initializer: '[]',
+                  initializer: '[]'
                 });
               const expArr = expProp.getInitializerIfKind(
-                SyntaxKind.ArrayLiteralExpression,
+                SyntaxKind.ArrayLiteralExpression
               );
               if (
                 expArr &&
-                !expArr.getElements().some((e) => e.getText() === ucClsName)
+                !expArr.getElements().some(e => e.getText() === ucClsName)
               )
                 expArr.addElement(ucClsName);
             }
@@ -910,7 +900,7 @@ module.exports = function (plop) {
             console.error(`Erro ${targetModuleInfo.moduleFilePath}:`, e);
             return sf.getFullText();
           }
-        },
+        }
       });
       actions.push(async () => {
         runPrettier(ucFilePath);
@@ -918,7 +908,7 @@ module.exports = function (plop) {
         return 'Use Case criado e módulo atualizado.';
       });
       return actions;
-    },
+    }
   });
 
   // --- GERADOR DE ENTIDADE ---
@@ -930,7 +920,7 @@ module.exports = function (plop) {
         type: 'list',
         name: 'targetModuleInfo',
         message: 'Onde você deseja declarar a entidade/repositório?',
-        choices: getModuleChoices,
+        choices: getModuleChoices
       },
       {
         type: 'input',
@@ -944,19 +934,19 @@ module.exports = function (plop) {
             process.cwd(),
             ans.targetModuleInfo.logicBasePath,
             'application/domain/entities', // Corrigido para a nova estrutura
-            `${eName}.entity.interface.ts`,
+            `${eName}.entity.interface.ts`
           );
           if (existsSync(ePath))
             return `Entidade ${eName} já existe em ${ans.targetModuleInfo.logicBasePath}/application/domain/entities.`;
           return true;
-        },
+        }
       },
       {
         type: 'confirm',
         name: 'createRepository',
         message: 'Criar repositório para esta entidade?',
-        default: true,
-      },
+        default: true
+      }
     ],
     actions: function (data) {
       const actions = [];
@@ -978,7 +968,7 @@ module.exports = function (plop) {
         entityKebabName: eKebab,
         repositoryInterfaceName: `I${ePascal}Repository`,
         repositoryClassName: `${ePascal}TypeOrmRepository`,
-        typeOrmEntityClassName: `${ePascal}EntityTypeOrm`,
+        typeOrmEntityClassName: `${ePascal}EntityTypeOrm`
       };
 
       // Garante que o diretório application/domain e application/domain/entities existam
@@ -997,14 +987,14 @@ module.exports = function (plop) {
         type: 'add',
         path: domEntFilePath,
         templateFile: 'plop-templates/entity-interface.hbs',
-        data: tData,
+        data: tData
       });
       const infEntFilePath = `${infEntPath}/${eKebab}.typeorm.entity.ts`;
       actions.push({
         type: 'add',
         path: infEntFilePath,
         templateFile: 'plop-templates/entity-typeorm.hbs',
-        data: tData,
+        data: tData
       });
       let appRepoFilePath = '',
         infRepoFilePath = '';
@@ -1014,28 +1004,28 @@ module.exports = function (plop) {
           type: 'add',
           path: appRepoFilePath,
           templateFile: 'plop-templates/repository-interface.hbs',
-          data: tData,
+          data: tData
         });
         infRepoFilePath = `${infRepoPath}/${eKebab}.typeorm.repository.ts`;
         actions.push({
           type: 'add',
           path: infRepoFilePath,
           templateFile: 'plop-templates/repository-typeorm.hbs',
-          data: tData,
+          data: tData
         });
       }
       actions.push({
         type: 'modify',
         path: targetModuleInfo.moduleFilePath,
-        transform: (content) => {
+        transform: content => {
           const proj = new Project({
             useInMemoryFileSystem: false,
-            tsConfigFilePath: join(process.cwd(), 'tsconfig.json'),
+            tsConfigFilePath: join(process.cwd(), 'tsconfig.json')
           });
           const absPath = join(process.cwd(), targetModuleInfo.moduleFilePath);
           if (!existsSync(absPath))
             throw new Error(
-              `Módulo ${targetModuleInfo.moduleFilePath} não encontrado.`,
+              `Módulo ${targetModuleInfo.moduleFilePath} não encontrado.`
             );
           const sf = proj.addSourceFileAtPath(absPath);
 
@@ -1048,61 +1038,59 @@ module.exports = function (plop) {
 
           if (
             !sf.getImportDeclaration(
-              (i) =>
+              i =>
                 i.getModuleSpecifierValue() === typeOrmEntImpPath &&
                 i
                   .getNamedImports()
-                  .some((n) => n.getName() === tData.typeOrmEntityClassName),
+                  .some(n => n.getName() === tData.typeOrmEntityClassName)
             )
           )
             sf.addImportDeclaration({
               namedImports: [tData.typeOrmEntityClassName],
-              moduleSpecifier: typeOrmEntImpPath,
+              moduleSpecifier: typeOrmEntImpPath
             });
           if (
             !sf.getImportDeclaration(
-              (i) =>
+              i =>
                 i.getModuleSpecifierValue() === '@nestjs/typeorm' &&
-                i
-                  .getNamedImports()
-                  .some((n) => n.getName() === 'TypeOrmModule'),
+                i.getNamedImports().some(n => n.getName() === 'TypeOrmModule')
             )
           )
             sf.addImportDeclaration({
               namedImports: ['TypeOrmModule'],
-              moduleSpecifier: '@nestjs/typeorm',
+              moduleSpecifier: '@nestjs/typeorm'
             });
           if (createRepository) {
             if (
               !sf.getImportDeclaration(
-                (i) =>
+                i =>
                   i.getModuleSpecifierValue() === repoIfImpPath &&
                   i
                     .getNamedImports()
-                    .some((n) => n.getName() === tData.repositoryInterfaceName),
+                    .some(n => n.getName() === tData.repositoryInterfaceName)
               )
             )
               sf.addImportDeclaration({
                 namedImports: [tData.repositoryInterfaceName],
-                moduleSpecifier: repoIfImpPath,
+                moduleSpecifier: repoIfImpPath
               });
             if (
               !sf.getImportDeclaration(
-                (i) =>
+                i =>
                   i.getModuleSpecifierValue() === repoClsImpPath &&
                   i
                     .getNamedImports()
-                    .some((n) => n.getName() === tData.repositoryClassName),
+                    .some(n => n.getName() === tData.repositoryClassName)
               )
             )
               sf.addImportDeclaration({
                 namedImports: [tData.repositoryClassName],
-                moduleSpecifier: repoClsImpPath,
+                moduleSpecifier: repoClsImpPath
               });
           }
           const dec = sf
             .getDescendantsOfKind(SyntaxKind.Decorator)
-            .find((d) => d.getName() === 'Module');
+            .find(d => d.getName() === 'Module');
           if (dec) {
             const modArgs = dec.getArguments()[0];
             if (
@@ -1114,16 +1102,16 @@ module.exports = function (plop) {
               if (!impProp)
                 impProp = objLit.addPropertyAssignment({
                   name: 'imports',
-                  initializer: '[]',
+                  initializer: '[]'
                 });
               const impArr = impProp.getInitializerIfKind(
-                SyntaxKind.ArrayLiteralExpression,
+                SyntaxKind.ArrayLiteralExpression
               );
               if (impArr) {
                 let forFeature = impArr
                   .getElements()
-                  .find((el) =>
-                    el.getText().startsWith('TypeOrmModule.forFeature'),
+                  .find(el =>
+                    el.getText().startsWith('TypeOrmModule.forFeature')
                   );
                 if (forFeature) {
                   const call = forFeature.asKind(SyntaxKind.CallExpression);
@@ -1135,15 +1123,13 @@ module.exports = function (plop) {
                       argArr &&
                       !argArr
                         .getElements()
-                        .some(
-                          (e) => e.getText() === tData.typeOrmEntityClassName,
-                        )
+                        .some(e => e.getText() === tData.typeOrmEntityClassName)
                     )
                       argArr.addElement(tData.typeOrmEntityClassName);
                   }
                 } else {
                   impArr.addElement(
-                    `TypeOrmModule.forFeature([${tData.typeOrmEntityClassName}])`,
+                    `TypeOrmModule.forFeature([${tData.typeOrmEntityClassName}])`
                   );
                 }
               }
@@ -1152,20 +1138,20 @@ module.exports = function (plop) {
                 if (!provProp)
                   provProp = objLit.addPropertyAssignment({
                     name: 'providers',
-                    initializer: '[]',
+                    initializer: '[]'
                   });
                 const provArr = provProp.getInitializerIfKind(
-                  SyntaxKind.ArrayLiteralExpression,
+                  SyntaxKind.ArrayLiteralExpression
                 );
                 const provEntry = `{provide:'${tData.repositoryInterfaceName}',useClass:${tData.repositoryClassName}}`;
                 if (
                   provArr &&
                   !provArr
                     .getElements()
-                    .some((el) =>
+                    .some(el =>
                       el
                         .getText()
-                        .includes(`'${tData.repositoryInterfaceName}'`),
+                        .includes(`'${tData.repositoryInterfaceName}'`)
                     )
                 )
                   provArr.addElement(provEntry);
@@ -1173,15 +1159,15 @@ module.exports = function (plop) {
                 if (!expProp)
                   expProp = objLit.addPropertyAssignment({
                     name: 'exports',
-                    initializer: '[]',
+                    initializer: '[]'
                   });
                 const expArr = expProp.getInitializerIfKind(
-                  SyntaxKind.ArrayLiteralExpression,
+                  SyntaxKind.ArrayLiteralExpression
                 );
                 const expEntry = `'${tData.repositoryInterfaceName}'`;
                 if (
                   expArr &&
-                  !expArr.getElements().some((e) => e.getText() === expEntry)
+                  !expArr.getElements().some(e => e.getText() === expEntry)
                 )
                   expArr.addElement(expEntry);
               }
@@ -1196,9 +1182,9 @@ module.exports = function (plop) {
             console.error(`Erro ${targetModuleInfo.moduleFilePath}:`, e);
             return sf.getFullText();
           }
-        },
+        }
       });
-      actions.push(async () => {
+      actions.push(() => {
         const fmt = [domEntFilePath, infEntFilePath];
         if (createRepository) {
           fmt.push(appRepoFilePath);
@@ -1208,6 +1194,6 @@ module.exports = function (plop) {
         return 'Entidade e Repositório criados e módulo atualizado.';
       });
       return actions;
-    },
+    }
   });
 };

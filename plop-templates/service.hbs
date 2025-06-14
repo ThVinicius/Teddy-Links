@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { {{serviceInterfaceName}} } from '../application/services/{{serviceKebabName}}.interface';
+import { Injectable } from '@nestjs/common'; 
+import {
+{{serviceInterfaceName}}
+} from '../../application/services/{{serviceKebabName}}.interface';
 
-@Injectable()
-export class {{servicePascalName}}Service implements {{serviceInterfaceName}} {
-  constructor() {}
-
-  // Implemente os métodos da {{serviceInterfaceName}} aqui
-}
+@Injectable() export class
+{{servicePascalName}}Service implements
+{{serviceInterfaceName}}
+{ constructor() {} }

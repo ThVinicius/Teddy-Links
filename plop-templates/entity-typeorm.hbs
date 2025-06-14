@@ -3,9 +3,9 @@ import {
   DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
-import { I{{entityPascalName}}Entity } from '../domain/entities/{{entityKebabName}}.entity.interface';
+import { I{{entityPascalName}}Entity } from '../../application/domain/entities/{{entityKebabName}}.entity.interface';
 
 @Entity({ name: '{{snakeCase entityName}}' })
 export class {{entityPascalName}}EntityTypeOrm implements I{{entityPascalName}}Entity {
