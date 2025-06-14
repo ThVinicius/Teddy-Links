@@ -6,6 +6,7 @@ import { CreateShortenedLinkUseCase } from './application/use-cases/create-short
 import { FindLinkUseCase } from './application/use-cases/find-link.use-case';
 import { UserDeleteLinkUseCase } from './application/use-cases/user-delete-link.use-case';
 import { UserListLinkUseCase } from './application/use-cases/user-list-link.use-case';
+import { UserUpdateLinkUseCase } from './application/use-cases/user-update-link.use-case';
 import { LinkEntityTypeOrm } from './infrastructure/entities/link.typeorm.entity';
 import { LinkTypeOrmRepository } from './infrastructure/repositories/link.typeorm.repository';
 
@@ -36,9 +37,15 @@ import { LinkTypeOrmRepository } from './infrastructure/repositories/link.typeor
       useFactory: (linkRepository: ILinkRepository) =>
         new UserDeleteLinkUseCase(linkRepository),
       inject: ['ILinkRepository']
+    },
+    {
+      provide: UserUpdateLinkUseCase,
+      useFactory: (linkRepository: ILinkRepository) =>
+        new UserUpdateLinkUseCase(linkRepository),
+      inject: ['ILinkRepository']
     }
   ],
-  exports: [UserListLinkUseCase, UserDeleteLinkUseCase],
+  exports: [UserListLinkUseCase, UserDeleteLinkUseCase, UserUpdateLinkUseCase],
   controllers: [LinkController]
 })
 export class LinkModule {}

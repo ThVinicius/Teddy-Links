@@ -7,4 +7,5 @@ export interface ILinkRepository {
   findById(id: number): Promise<ILinkEntity | null>;
   findByUserId(userId: number): Promise<ILinkEntity[]>;
   softDelete(id: number): Promise<void>;
+  updateLink(data: ILinkEntity): Promise<ILinkEntity>;
 }

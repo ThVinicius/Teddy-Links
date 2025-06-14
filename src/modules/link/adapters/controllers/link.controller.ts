@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Redirect,
   UseGuards
@@ -17,6 +18,8 @@ import { GetUser } from '../../../auth/adapters/decorators/get-user.decorator';
 import { IUserEntity } from '../../../auth/application/domain/entities/user.entity.interface';
 import { UserListLinkUseCase } from '../../application/use-cases/user-list-link.use-case';
 import { UserDeleteLinkUseCase } from '../../application/use-cases/user-delete-link.use-case';
+import { UserUpdateLinkUseCase } from '../../application/use-cases/user-update-link.use-case';
+import { UpdateLinkDto } from '../dtos/update-link.dto';
 
 @Controller({ path: 'link' })
 export class LinkController {
@@ -24,7 +27,8 @@ export class LinkController {
     private readonly createShortenedLinkUseCase: CreateShortenedLinkUseCase,
     private readonly findLinkUseCase: FindLinkUseCase,
     private readonly userListLinkUseCase: UserListLinkUseCase,
-    private readonly userDeleteLinkUseCase: UserDeleteLinkUseCase
+    private readonly userDeleteLinkUseCase: UserDeleteLinkUseCase,
+    private readonly userUpdateLinkUseCase: UserUpdateLinkUseCase
   ) {}
 
   @UseGuards(JWTUserAuthGuard)
@@ -57,5 +61,11 @@ export class LinkController {
   async deleteLink(@Param('id') id: number, @GetUser() user: IUserEntity) {
     await this.userDeleteLinkUseCase.execute(id, user.id);
     return { message: 'Link deleted successfully' };
+  }
+
+  @UseGuards(JWTUserAuthGuard)
+  @Patch()
+  async updateLink(@Body() body: UpdateLinkDto, @GetUser() user: IUserEntity) {
+    return await this.userUpdateLinkUseCase.execute(body, user.id);
   }
 }

@@ -36,7 +36,11 @@ export class LinkTypeOrmRepository implements ILinkRepository {
   }
 
   async softDelete(id: number): Promise<void> {
-    const aux = await this.repository.softDelete(id);
-    console.log('🚀 ~ LinkTypeOrmRepository ~ softDelete ~ aux:', aux);
+    await this.repository.softDelete(id);
+  }
+
+  async updateLink(data: ILinkEntity): Promise<ILinkEntity> {
+    const linkEntity = this.repository.create(data);
+    return await this.repository.save(linkEntity);
   }
 }
