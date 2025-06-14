@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { LinkController } from './adapters/controllers/link.controller';
 import { ILinkRepository } from './application/repositories/link.repository.interface';
 import { CreateShortenedLinkUseCase } from './application/use-cases/create-shortened-link.use-case';
 import { FindLinkUseCase } from './application/use-cases/find-link.use-case';
@@ -23,6 +24,7 @@ import { LinkTypeOrmRepository } from './infrastructure/repositories/link.typeor
       inject: ['ILinkRepository']
     }
   ],
-  exports: []
+  exports: [],
+  controllers: [LinkController]
 })
 export class LinkModule {}
