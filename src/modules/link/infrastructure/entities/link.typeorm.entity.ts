@@ -25,8 +25,8 @@ export class LinkEntityTypeOrm implements ILinkEntity {
   @Column({ default: 0 })
   click_count: number;
 
-  @Column()
-  user_id: number;
+  @Column({ nullable: true })
+  user_id: number | null;
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;

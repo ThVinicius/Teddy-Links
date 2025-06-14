@@ -9,13 +9,16 @@ export class CreateShortenedLinkUseCase {
 
   constructor(private readonly linksRepository: ILinkRepository) {}
 
-  async execute(original_url: string, user_id: number): Promise<ILinkEntity> {
+  async execute(
+    original_url: string,
+    user_id: number | null
+  ): Promise<ILinkEntity> {
     return await this.createUniqueLink(original_url, user_id, this.MAX_RETRIES);
   }
 
   private async createUniqueLink(
     original_url: string,
-    user_id: number,
+    user_id: number | null,
     retries: number
   ): Promise<ILinkEntity> {
     if (retries === 0) {

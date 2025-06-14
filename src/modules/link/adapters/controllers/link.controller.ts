@@ -20,6 +20,7 @@ import { UserListLinkUseCase } from '../../application/use-cases/user-list-link.
 import { UserDeleteLinkUseCase } from '../../application/use-cases/user-delete-link.use-case';
 import { UserUpdateLinkUseCase } from '../../application/use-cases/user-update-link.use-case';
 import { UpdateLinkDto } from '../dtos/update-link.dto';
+import { OptionalJWTUserAuthGuard } from '../../../auth/adapters/guards/optional-jwt-user-auth.guard';
 
 @Controller({ path: 'link' })
 export class LinkController {
@@ -31,13 +32,14 @@ export class LinkController {
     private readonly userUpdateLinkUseCase: UserUpdateLinkUseCase
   ) {}
 
-  @UseGuards(JWTUserAuthGuard)
+  @UseGuards(OptionalJWTUserAuthGuard)
   @Post('create')
   async createShortenedLink(
     @Body() body: CreateShortenedLinkDto,
-    @GetUser() user: IUserEntity
+    @GetUser() user?: IUserEntity
   ) {
-    return await this.createShortenedLinkUseCase.execute(body.link, user.id);
+    const userId = user ? user.id : null;
+    return await this.createShortenedLinkUseCase.execute(body.link, userId);
   }
 
   @Get(':shortUrl')
