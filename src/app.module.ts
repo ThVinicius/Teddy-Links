@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LinkModule } from './modules/link/link.module';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
+import { AuthModule } from './modules/auth/auth.module';
+import { LinkModule } from './modules/link/link.module';
 
 @Module({
   imports: [
@@ -12,7 +13,8 @@ import { TypeOrmConfigService } from './database/typeorm-config.service';
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService
     }),
-    LinkModule
+    LinkModule,
+    AuthModule
   ],
   controllers: [],
   providers: []

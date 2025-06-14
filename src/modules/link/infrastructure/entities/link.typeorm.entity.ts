@@ -3,10 +3,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
 import { ILinkEntity } from '../../application/domain/entities/link.entity.interface';
+import { UserEntityTypeOrm } from '../../../auth/infrastructure/entities/user.typeorm.entity';
 
 @Entity({ name: 'links' })
 export class LinkEntityTypeOrm implements ILinkEntity {
@@ -19,6 +22,9 @@ export class LinkEntityTypeOrm implements ILinkEntity {
   @Column()
   original_url: string;
 
+  @Column()
+  user_id: number;
+
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
 
@@ -27,4 +33,8 @@ export class LinkEntityTypeOrm implements ILinkEntity {
 
   @DeleteDateColumn({ type: 'timestamptz' })
   deleted_at?: Date;
+
+  @ManyToOne(() => UserEntityTypeOrm, user => user.links)
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
+  user: UserEntityTypeOrm;
 }
