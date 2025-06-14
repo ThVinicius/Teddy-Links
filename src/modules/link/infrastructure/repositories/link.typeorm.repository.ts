@@ -22,4 +22,10 @@ export class LinkTypeOrmRepository implements ILinkRepository {
       where: { short_url: shortUrl }
     });
   }
+
+  async findByUserId(userId: number): Promise<ILinkEntity[]> {
+    return await this.repository.find({
+      where: { user_id: userId }
+    });
+  }
 }
