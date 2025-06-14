@@ -8,25 +8,20 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
-      type: this.configService.get('database.type'),
-      url: this.configService.get('database.url'),
-      host: this.configService.get('database.host'),
-      port: this.configService.get('database.port'),
-      username: this.configService.get('database.username'),
-      password: this.configService.get('database.password'),
-      database: this.configService.get('DATABASE_NAME'),
-      synchronize: this.configService.get('database.synchronize'),
+      type: this.configService.get<string>('DATABASE_TYPE'),
+      host: this.configService.get<string>('DATABASE_HOST'),
+      port: +(this.configService.get<number>('DATABASE_PORT') ?? 5432),
+      username: this.configService.get<string>('DATABASE_USERNAME'),
+      password: this.configService.get<string>('DATABASE_PASSWORD'),
+      database: this.configService.get<string>('DATABASE_NAME'),
+      synchronize: false,
       dropSchema: false,
       keepConnectionAlive: true,
-      logging: this.configService.get('app.nodeEnv') !== 'production',
+      logging: this.configService.get<string>('NODE_ENV') !== 'production',
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-      seeds: [__dirname + '/seeds/**/*{.ts,.js}'],
-      factories: [__dirname + '/factories/**/*{.ts,.js}'],
       cli: {
-        entitiesDir: 'src',
-        migrationsDir: 'src/database/migrations',
-        subscribersDir: 'subscriber'
+        migrationsDir: 'src/database/migrations'
       }
     } as TypeOrmModuleOptions;
   }
