@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -15,13 +16,15 @@ import { JWTUserAuthGuard } from '../../../auth/adapters/guards/user-auth.guard'
 import { GetUser } from '../../../auth/adapters/decorators/get-user.decorator';
 import { IUserEntity } from '../../../auth/application/domain/entities/user.entity.interface';
 import { UserListLinkUseCase } from '../../application/use-cases/user-list-link.use-case';
+import { UserDeleteLinkUseCase } from '../../application/use-cases/user-delete-link.use-case';
 
 @Controller({ path: 'link' })
 export class LinkController {
   constructor(
     private readonly createShortenedLinkUseCase: CreateShortenedLinkUseCase,
     private readonly findLinkUseCase: FindLinkUseCase,
-    private readonly userListLinkUseCase: UserListLinkUseCase
+    private readonly userListLinkUseCase: UserListLinkUseCase,
+    private readonly userDeleteLinkUseCase: UserDeleteLinkUseCase
   ) {}
 
   @UseGuards(JWTUserAuthGuard)
@@ -47,5 +50,12 @@ export class LinkController {
   @Get('user/list')
   async userListLink(@GetUser() user: IUserEntity) {
     return await this.userListLinkUseCase.execute(user.id);
+  }
+
+  @UseGuards(JWTUserAuthGuard)
+  @Delete(':id')
+  async deleteLink(@Param('id') id: number, @GetUser() user: IUserEntity) {
+    await this.userDeleteLinkUseCase.execute(id, user.id);
+    return { message: 'Link deleted successfully' };
   }
 }

@@ -28,4 +28,15 @@ export class LinkTypeOrmRepository implements ILinkRepository {
       where: { user_id: userId }
     });
   }
+
+  async findById(id: number): Promise<ILinkEntity | null> {
+    return await this.repository.findOne({
+      where: { id }
+    });
+  }
+
+  async softDelete(id: number): Promise<void> {
+    const aux = await this.repository.softDelete(id);
+    console.log('🚀 ~ LinkTypeOrmRepository ~ softDelete ~ aux:', aux);
+  }
 }
