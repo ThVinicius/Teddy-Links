@@ -39,9 +39,36 @@ services:
     networks:
       - teddy-net
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: teddy-links-prometheus
+    restart: always
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - '${PROMETHEUS_PORT}:9090'
+    networks:
+      - teddy-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: teddy-links-grafana
+    restart: always
+    ports:
+      - '${GRAFANA_PORT}:3000'
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - teddy-net
+
 networks:
   teddy-net:
     driver: bridge
 
 volumes:
   postgres_data:
+  prometheus_data:
+  grafana_data:

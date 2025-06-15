@@ -1,0 +1,92 @@
+name: Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_CLUSTER_NAME: ${{ secrets.GKE_CLUSTER_NAME }}
+  GCP_REGION: ${{ secrets.GCP_REGION }}
+  IMAGE_NAME: url-shortener-image
+  ARTIFACT_REGISTRY_REPO: url-shortener-repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # --- Terraform Steps ---
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.x
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config="bucket=${{ env.GCP_PROJECT_ID }}-terraform-state" # Use env.GCP_PROJECT_ID aqui
+        working-directory: ./terraform
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -input=false -var="project_id=${{ env.GCP_PROJECT_ID }}" -var="cluster_name=${{ env.GKE_CLUSTER_NAME }}" -var="gcp_region=${{ env.GCP_REGION }}"
+        working-directory: ./terraform
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -input=false -auto-approve -var="project_id=${{ env.GCP_PROJECT_ID }}" -var="cluster_name=${{ env.GKE_CLUSTER_NAME }}" -var="gcp_region=${{ env.GCP_REGION }}"
+        working-directory: ./terraform
+
+      - name: Configure Docker to use Google Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev
+        working-directory: .
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Set full image path as environment variable
+        run: |
+          echo "IMAGE_FULL_PATH=${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_ENV
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER_NAME }}
+          location: ${{ env.GCP_REGION }}
+
+      - name: Create or Update Kubernetes DB Secret
+        run: |
+          kubectl create secret generic url-shortener-db-secret \
+            --from-literal=username=${{ secrets.DB_USERNAME }} \
+            --from-literal=password=${{ secrets.DB_PASSWORD }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      - name: Update Kubernetes deployment image
+        run: |
+          # Substitui o placeholder da imagem no deployment.yaml com a imagem real
+          sed -i "s|YOUR_APP_IMAGE_PLACEHOLDER|${{ env.IMAGE_FULL_PATH }}|g" ./k8s/deployment.yaml
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/ingress.yaml

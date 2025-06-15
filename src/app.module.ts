@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { LinkModule } from './modules/link/link.module';
 
 @Module({
   imports: [
+    ...(process.env.METRICS_ENABLED === 'true'
+      ? [PrometheusModule.register()]
+      : []),
     ConfigModule.forRoot({
       isGlobal: true
     }),
