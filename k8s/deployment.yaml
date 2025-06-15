@@ -16,24 +16,89 @@ spec:
     spec:
       containers:
       - name: url-shortener
-        image: us-central1-docker.pkg.dev/url-shortener-gke/url-shortener-repo/url-shortener-image:latest
+        image: YOUR_APP_IMAGE_PLACEHOLDER 
         ports:
         - containerPort: 4000
         env:
+        - name: PORT
+          value: "4000"
         - name: NODE_ENV
           value: "production"
-        - name: DATABASE_URL
-          value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@127.0.0.1:5432/url_shortener_db"
-        - name: DB_USERNAME
+
+        - name: DATABASE_HOST
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret 
+              key: DATABASE_HOST
+        - name: DATABASE_HOST_PORT
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: DATABASE_HOST_PORT
+        - name: DATABASE_USERNAME
           valueFrom:
             secretKeyRef:
               name: url-shortener-db-secret
               key: username
-        - name: DB_PASSWORD
+        - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: url-shortener-db-secret
               key: password
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: DATABASE_NAME
+        - name: DATABASE_TYPE
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: DATABASE_TYPE
+        
+        - name: USER_AUTH_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: USER_AUTH_JWT_SECRET
+       
+        - name: OTEL_ENABLED
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: OTEL_ENABLED
+
+        - name: OTEL_SERVICE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: OTEL_SERVICE_NAME
+
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: OTEL_EXPORTER_OTLP_ENDPOINT
+
+       
+        - name: METRICS_ENABLED
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: METRICS_ENABLED
+
+        - name: GRAFANA_PORT
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: GRAFANA_PORT
+
+        - name: PROMETHEUS_PORT
+          valueFrom:
+            secretKeyRef:
+              name: app-config-secret
+              key: PROMETHEUS_PORT
+
         resources:
           requests:
             memory: "128Mi"
@@ -41,11 +106,3 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "200m"
-      - name: cloud-sql-proxy
-        image: gcr.io/cloud-sql-proxy/cloud-sql-proxy:2.8.0
-        args:
-        - "--instance=url-shortener-gke:us-central1:url-shortener-postgres=tcp:0.0.0.0:5432"
-        ports:
-        - containerPort: 5432
-        securityContext:
-          runAsNonRoot: true
