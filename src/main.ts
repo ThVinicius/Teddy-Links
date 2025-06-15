@@ -1,4 +1,5 @@
 import { NestFactory, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { BusinessExceptionFilter } from './modules/link/adapters/error/business-exception.filter';
@@ -17,6 +18,21 @@ async function bootstrap() {
       }
     })
   );
+
+  const docConfig = new DocumentBuilder()
+    .setTitle('API do Encurtador de Links - Teddy Open Finance')
+    .setDescription(
+      `Documentação oficial e interativa da API para o serviço de encurtamento de URLs Teddy Links.
+      \n\nA API permite criar, gerenciar e monitorar links encurtados.
+      \n\n**Autenticação:** Alguns endpoints são públicos, enquanto outros requerem autenticação via token JWT. 
+      Para os endpoints protegidos, clique no botão 'Authorize' e insira seu token no formato 'Bearer {seu_token}'.`
+    )
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, docConfig);
+  SwaggerModule.setup('docs', app, document);
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
