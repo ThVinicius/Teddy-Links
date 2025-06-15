@@ -1,11 +1,14 @@
 import * as bcrypt from 'bcrypt';
 
 export class HashLib {
-  static sync(text: string, saltRounds: number): string {
-    return bcrypt.hashSync(text, saltRounds);
-  }
+  public static readonly sync = (text: string, salt: number): string => {
+    return bcrypt.hashSync(text, salt);
+  };
 
-  static compareSync(decrypted: string, encrypted: string): boolean {
-    return bcrypt.compareSync(decrypted, encrypted);
-  }
+  public static readonly compareSync = (
+    text: string,
+    hash: string
+  ): boolean => {
+    return bcrypt.compareSync(text, hash);
+  };
 }

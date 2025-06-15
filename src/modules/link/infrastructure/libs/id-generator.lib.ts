@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 
 @Injectable()
 export class IdGeneratorLib {
-  static generateId(size: number): string {
+  static readonly generateId = (size: number): string => {
     return nanoid(size);
-  }
+  };
 }
