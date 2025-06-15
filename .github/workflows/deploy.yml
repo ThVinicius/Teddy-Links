@@ -72,12 +72,12 @@ jobs:
       - name: Create or Update Kubernetes App Config Secret
         run: |
           kubectl create secret generic app-config-secret \
-            --from-literal=DATABASE_HOST=${{ secrets.DB_HOST }} \
-            --from-literal=DATABASE_HOST_PORT=${{ secrets.DB_PORT }} \
-            --from-literal=DATABASE_USERNAME=${{ secrets.DB_USERNAME }} \
-            --from-literal=DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            --from-literal=DATABASE_NAME=${{ secrets.DB_NAME }} \
-            --from-literal=DATABASE_TYPE=${{ secrets.DB_TYPE }} \
+            --from-literal=DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
+            --from-literal=DATABASE_HOST_PORT=${{ secrets.DATABASE_HOST_PORT }} \
+            --from-literal=DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
+            --from-literal=DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            --from-literal=DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
+            --from-literal=DATABASE_TYPE=${{ secrets.DATABASE_TYPE }} \
             --from-literal=USER_AUTH_JWT_SECRET=${{ secrets.USER_AUTH_JWT_SECRET }} \
             --from-literal=SENTRY_ENABLED=${{ secrets.SENTRY_ENABLED }} \
             --from-literal=SENTRY_DSN=${{ secrets.SENTRY_DSN }} \
@@ -89,12 +89,12 @@ jobs:
             --from-literal=PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }} \
             --dry-run=client -o yaml | kubectl apply -f -
         env:
-          DATABASE_HOST: ${{ secrets.DB_HOST }}
-          DATABASE_HOST_PORT: ${{ secrets.DB_PORT }}
-          DATABASE_USERNAME: ${{ secrets.DB_USERNAME }}
-          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DATABASE_NAME: ${{ secrets.DB_NAME }}
-          DB_TYPE: ${{ secrets.DB_TYPE }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_HOST_PORT: ${{ secrets.DATABASE_HOST_PORT }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_TYPE: ${{ secrets.DATABASE_TYPE }}
           USER_AUTH_JWT_SECRET: ${{ secrets.USER_AUTH_JWT_SECRET }}
           SENTRY_ENABLED: ${{ secrets.SENTRY_ENABLED }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
