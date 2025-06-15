@@ -23,10 +23,19 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     ports:
-      # AQUI: Use a nova variável para a porta do HOST
       - '${DATABASE_HOST_PORT}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - teddy-net
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: teddy-links-jaeger
+    restart: always
+    ports:
+      - '16686:16686'
+      - '4318:4318'
     networks:
       - teddy-net
 

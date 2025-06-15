@@ -1,8 +1,10 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { AppModule } from './app.module';
 import { BusinessExceptionFilter } from './modules/link/adapters/error/business-exception.filter';
+import { initOpenTelemetry } from './config/opentelemetry';
+initOpenTelemetry();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
