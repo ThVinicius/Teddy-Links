@@ -27,7 +27,6 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      # --- Terraform Steps ---
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -35,7 +34,7 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init -backend-config="bucket=${{ env.GCP_PROJECT_ID }}-terraform-state" # Use env.GCP_PROJECT_ID aqui
+        run: terraform init -backend-config="bucket=${{ env.GCP_PROJECT_ID }}-terraform-state"
         working-directory: ./terraform
 
       - name: Terraform Plan
@@ -80,9 +79,40 @@ jobs:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
+      - name: Create or Update Kubernetes App Config Secret
+        run: |
+          kubectl create secret generic app-config-secret \
+            --from-literal=DATABASE_HOST=${{ secrets.DB_HOST }} \
+            --from-literal=DATABASE_HOST_PORT=${{ secrets.DB_PORT }} \
+            --from-literal=DATABASE_NAME=${{ secrets.DB_NAME }} \
+            --from-literal=DATABASE_TYPE=${{ secrets.DB_TYPE }} \
+            --from-literal=USER_AUTH_JWT_SECRET=${{ secrets.USER_AUTH_JWT_SECRET }} \
+            --from-literal=SENTRY_ENABLED=${{ secrets.SENTRY_ENABLED }} \
+            --from-literal=SENTRY_DSN=${{ secrets.SENTRY_DSN }} \
+            --from-literal=OTEL_ENABLED=${{ secrets.OTEL_ENABLED }} \
+            --from-literal=OTEL_SERVICE_NAME=${{ secrets.OTEL_SERVICE_NAME }} \
+            --from-literal=OTEL_EXPORTER_OTLP_ENDPOINT=${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }} \
+            --from-literal=METRICS_ENABLED=${{ secrets.METRICS_ENABLED }} \
+            --from-literal=GRAFANA_PORT=${{ secrets.GRAFANA_PORT }} \
+            --from-literal=PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_TYPE: ${{ secrets.DB_TYPE }}
+          USER_AUTH_JWT_SECRET: ${{ secrets.USER_AUTH_JWT_SECRET }}
+          SENTRY_ENABLED: ${{ secrets.SENTRY_ENABLED }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          OTEL_ENABLED: ${{ secrets.OTEL_ENABLED }}
+          OTEL_SERVICE_NAME: ${{ secrets.OTEL_SERVICE_NAME }}
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          METRICS_ENABLED: ${{ secrets.METRICS_ENABLED }}
+          GRAFANA_PORT: ${{ secrets.GRAFANA_PORT }}
+          PROMETHEUS_PORT: ${{ secrets.PROMETHEUS_PORT }}
+
       - name: Update Kubernetes deployment image
         run: |
-          # Substitui o placeholder da imagem no deployment.yaml com a imagem real
           sed -i "s|YOUR_APP_IMAGE_PLACEHOLDER|${{ env.IMAGE_FULL_PATH }}|g" ./k8s/deployment.yaml
 
       - name: Apply Kubernetes manifests
