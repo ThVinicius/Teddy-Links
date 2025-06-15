@@ -99,6 +99,19 @@ spec:
               name: app-config-secret
               key: PROMETHEUS_PORT
 
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Debugging DB Variables:"
+            echo "DB_USERNAME: $DB_USERNAME"
+            echo "DB_PASSWORD: $DB_PASSWORD"
+            echo "DATABASE_HOST: $DATABASE_HOST"
+            echo "DATABASE_HOST_PORT: $DATABASE_HOST_PORT"
+            echo "DATABASE_NAME: $DATABASE_NAME"
+            echo "DATABASE_URL (se definida): $DATABASE_URL"
+            echo "Starting Node.js application..."
+            node dist/src/main.js
+
         resources:
           requests:
             memory: "128Mi"
