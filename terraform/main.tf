@@ -38,7 +38,6 @@ resource "google_container_cluster" "primary" {
   name     = var.cluster_name
   location = var.gcp_region 
 
-
   node_config {
     machine_type = "e2-medium"
     disk_size_gb = 20
@@ -49,14 +48,8 @@ resource "google_container_cluster" "primary" {
 
   initial_node_count = 1
 
-
   deletion_protection = false 
 
-  workload_identity_config {
-    identity_namespace = "${var.project_id}.svc.id.goog"
-  }
-
- 
   master_authorized_networks_config {
     cidr_blocks {
       cidr_block   = "0.0.0.0/0"
@@ -77,11 +70,11 @@ resource "google_container_cluster" "primary" {
       initial_node_count
     ]
   }
+}
 
-  resource "google_artifact_registry_repository" "docker_repo" {
-    location      = var.gcp_region
-    repository_id = "url-shortener-repo"
-    description   = "Docker repository for URL Shortener application"
-    format        = "DOCKER"
-  }
+resource "google_artifact_registry_repository" "docker_repo" {
+  location      = var.gcp_region
+  repository_id = "url-shortener-repo"
+  description   = "Docker repository for URL Shortener application"
+  format        = "DOCKER"
 }
