@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: url-shortener
-        image: YOUR_APP_IMAGE_PLACEHOLDER # <-- Novo placeholder aqui
+        image: us-central1-docker.pkg.dev/url-shortener-gke/url-shortener-repo/url-shortener-image:latest
         ports:
         - containerPort: 4000
         env:
@@ -44,8 +44,8 @@ spec:
       - name: cloud-sql-proxy
         image: gcr.io/cloud-sql-proxy/cloud-sql-proxy:2.8.0
         args:
-          - "--instance=${{ secrets.GCP_PROJECT_ID }}:${{ env.GCP_REGION }}:url-shortener-postgres-manual=tcp:0.0.0.0:5432"
+        - "--instance=url-shortener-gke:us-central1:url-shortener-postgres=tcp:0.0.0.0:5432"
         ports:
-          - containerPort: 5432
+        - containerPort: 5432
         securityContext:
           runAsNonRoot: true
