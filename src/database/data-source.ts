@@ -7,7 +7,9 @@ const AppDataSource = new DataSource({
   type: (process.env.DATABASE_TYPE as 'postgres') || 'postgres',
   url: process.env.DATABASE_URL,
   host: process.env.DATABASE_HOST,
-  port: process.env.DATABASE_PORT ? +process.env.DATABASE_PORT : 5432,
+  port: Number(
+    process.env.DATABASE_CONTAINER_PORT ?? process.env.DATABASE_HOST_PORT
+  ),
   username: process.env.DATABASE_USERNAME,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,

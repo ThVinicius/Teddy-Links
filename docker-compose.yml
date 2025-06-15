@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: teddy-links-app
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - '${PORT}:${PORT}'
+    depends_on:
+      - db
+    networks:
+      - teddy-net
+
+  db:
+    image: postgres:15-alpine
+    container_name: teddy-links-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      # AQUI: Use a nova variável para a porta do HOST
+      - '${DATABASE_HOST_PORT}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - teddy-net
+
+networks:
+  teddy-net:
+    driver: bridge
+
+volumes:
+  postgres_data:

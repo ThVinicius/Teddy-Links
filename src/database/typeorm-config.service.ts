@@ -10,7 +10,10 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
     return {
       type: this.configService.get<string>('DATABASE_TYPE'),
       host: this.configService.get<string>('DATABASE_HOST'),
-      port: +(this.configService.get<number>('DATABASE_PORT') ?? 5432),
+      port: Number(
+        this.configService.get<string>('DATABASE_CONTAINER_PORT') ??
+          this.configService.get<string>('DATABASE_HOST_PORT')
+      ),
       username: this.configService.get<string>('DATABASE_USERNAME'),
       password: this.configService.get<string>('DATABASE_PASSWORD'),
       database: this.configService.get<string>('DATABASE_NAME'),

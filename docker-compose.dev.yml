@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      target: builder
+
+    command: npm run start:dev
+
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules

@@ -24,7 +24,10 @@
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "migration:show": "typeorm-ts-node-commonjs migration:show -d src/database/data-source.ts",
-    "migration:create": "typeorm-ts-node-commonjs migration:create src/database/migrations/NewMigration"
+    "migration:create": "typeorm-ts-node-commonjs migration:create src/database/migrations/NewMigration",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
+    "docker:dev:build": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build",
+    "docker:migrate": "docker-compose exec app npm run migration:run"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
