@@ -65,8 +65,6 @@ resource "google_container_cluster" "primary" {
 
   lifecycle {
     ignore_changes = [
-      node_config[0].auto_repair,
-      node_config[0].auto_upgrade,
       initial_node_count
     ]
   }
