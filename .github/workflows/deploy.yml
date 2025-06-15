@@ -69,21 +69,13 @@ jobs:
           cluster_name: ${{ env.GKE_CLUSTER_NAME }}
           location: ${{ env.GCP_REGION }}
 
-      - name: Create or Update Kubernetes DB Secret
-        run: |
-          kubectl create secret generic url-shortener-db-secret \
-            --from-literal=username=${{ secrets.DB_USERNAME }} \
-            --from-literal=password=${{ secrets.DB_PASSWORD }} \
-            --dry-run=client -o yaml | kubectl apply -f -
-        env:
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-
       - name: Create or Update Kubernetes App Config Secret
         run: |
           kubectl create secret generic app-config-secret \
             --from-literal=DATABASE_HOST=${{ secrets.DB_HOST }} \
             --from-literal=DATABASE_HOST_PORT=${{ secrets.DB_PORT }} \
+            --from-literal=DATABASE_USERNAME=${{ secrets.DB_USERNAME }} \
+            --from-literal=DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --from-literal=DATABASE_NAME=${{ secrets.DB_NAME }} \
             --from-literal=DATABASE_TYPE=${{ secrets.DB_TYPE }} \
             --from-literal=USER_AUTH_JWT_SECRET=${{ secrets.USER_AUTH_JWT_SECRET }} \
@@ -97,9 +89,11 @@ jobs:
             --from-literal=PROMETHEUS_PORT=${{ secrets.PROMETHEUS_PORT }} \
             --dry-run=client -o yaml | kubectl apply -f -
         env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
+          DATABASE_HOST: ${{ secrets.DB_HOST }}
+          DATABASE_HOST_PORT: ${{ secrets.DB_PORT }}
+          DATABASE_USERNAME: ${{ secrets.DB_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DB_NAME }}
           DB_TYPE: ${{ secrets.DB_TYPE }}
           USER_AUTH_JWT_SECRET: ${{ secrets.USER_AUTH_JWT_SECRET }}
           SENTRY_ENABLED: ${{ secrets.SENTRY_ENABLED }}
