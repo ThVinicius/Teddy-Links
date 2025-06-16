@@ -27,6 +27,10 @@ spec:
       labels:
         app: prometheus
     spec:
+      securityContext:
+        fsGroup: 65534 
+        runAsUser: 65534 
+      
       serviceAccountName: prometheus
       containers:
         - name: prometheus
@@ -59,18 +63,3 @@ spec:
         - name: prometheus-storage
           persistentVolumeClaim:
             claimName: prometheus-pvc
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: prometheus
-  labels:
-    app: prometheus
-spec:
-  selector:
-    app: prometheus
-  ports:
-    - protocol: TCP
-      port: 9090
-      targetPort: web
-  type: LoadBalancer
