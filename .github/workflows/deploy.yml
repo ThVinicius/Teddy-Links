@@ -124,13 +124,9 @@ jobs:
           kubectl apply -f k8s-observability/prometheus-rbac.yaml
           echo "Deploying Prometheus Config..."
           kubectl apply -f k8s-observability/prometheus-config.yaml
-          echo "Deploying Prometheus PVC..."
-          kubectl apply -f k8s-observability/prometheus-pvc.yaml
           echo "Deploying Prometheus Deployment..."
           kubectl apply -f k8s-observability/prometheus-deployment.yaml
 
-          echo "Deploying Grafana PVC..."
-          kubectl apply -f k8s-observability/grafana-pvc.yaml
           echo "Deploying Grafana Datasource Config..."
           kubectl apply -f k8s-observability/grafana-datasource.yaml
           echo "Deploying Grafana Deployment..."
