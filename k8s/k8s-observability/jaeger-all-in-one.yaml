@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  labels:
+    app: jaeger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: jaegertracing/all-in-one:latest
+          ports:
+            - containerPort: 16686 # UI do Jaeger
+              name: jaeger-ui
+            - containerPort: 14268 # Porta padrão para HTTP Thrift (opcional)
+            - containerPort: 4318  # Porta OTLP HTTP (para sua aplicação Node.js)
+              name: otlp-http
+          env:
+            - name: COLLECTOR_OTLP_ENABLED
+              value: "true"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger
+  labels:
+    app: jaeger
+spec:
+  selector:
+    app: jaeger
+  ports:
+    - protocol: TCP
+      port: 16686
+      targetPort: jaeger-ui
+      name: http-query
+    - protocol: TCP
+      port: 4318
+      targetPort: otlp-http
+      name: otlp-http
+  type: LoadBalancer # <-- Mudar para LoadBalancer

@@ -114,3 +114,24 @@ jobs:
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
           kubectl apply -f k8s/ingress.yaml
+
+      - name: Deploy Observability Components
+        run: |
+          echo "Deploying Jaeger..."
+          kubectl apply -f k8s-observability/jaeger-all-in-one.yaml
+
+          echo "Deploying Prometheus RBAC..."
+          kubectl apply -f k8s-observability/prometheus-rbac.yaml
+          echo "Deploying Prometheus Config..."
+          kubectl apply -f k8s-observability/prometheus-config.yaml
+          echo "Deploying Prometheus PVC..."
+          kubectl apply -f k8s-observability/prometheus-pvc.yaml
+          echo "Deploying Prometheus Deployment..."
+          kubectl apply -f k8s-observability/prometheus-deployment.yaml
+
+          echo "Deploying Grafana PVC..."
+          kubectl apply -f k8s-observability/grafana-pvc.yaml
+          echo "Deploying Grafana Datasource Config..."
+          kubectl apply -f k8s-observability/grafana-datasource.yaml
+          echo "Deploying Grafana Deployment..."
+          kubectl apply -f k8s-observability/grafana-deployment.yaml
