@@ -16,19 +16,21 @@ spec:
     spec:
       containers:
       - name: url-shortener
-        image: YOUR_APP_IMAGE_PLACEHOLDER 
+        image: YOUR_APP_IMAGE_PLACEHOLDER # Placeholder será substituído pela GitHub Action
         ports:
         - containerPort: 4000
         env:
+        # Variáveis da sua aplicação
         - name: PORT
           value: "4000"
         - name: NODE_ENV
           value: "production"
 
+        # Configuração do Banco de Dados
         - name: DATABASE_HOST
           valueFrom:
             secretKeyRef:
-              name: app-config-secret 
+              name: app-config-secret
               key: DATABASE_HOST
         - name: DATABASE_HOST_PORT
           valueFrom:
@@ -38,13 +40,13 @@ spec:
         - name: DATABASE_USERNAME
           valueFrom:
             secretKeyRef:
-              name: app-config-secret
-              key: DATABASE_USERNAME
+              name: url-shortener-db-secret
+              key: username
         - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: app-config-secret
-              key: DATABASE_PASSWORD
+              name: url-shortener-db-secret
+              key: password
         - name: DATABASE_NAME
           valueFrom:
             secretKeyRef:
@@ -56,12 +58,14 @@ spec:
               name: app-config-secret
               key: DATABASE_TYPE
         
+        # JWT configuration
         - name: USER_AUTH_JWT_SECRET
           valueFrom:
             secretKeyRef:
               name: app-config-secret
               key: USER_AUTH_JWT_SECRET
        
+        # OpenTelemetry Configuration
         - name: OTEL_ENABLED
           valueFrom:
             secretKeyRef:
@@ -81,6 +85,7 @@ spec:
               key: OTEL_EXPORTER_OTLP_ENDPOINT
 
        
+        # Metrics configuration
         - name: METRICS_ENABLED
           valueFrom:
             secretKeyRef:
@@ -98,19 +103,8 @@ spec:
             secretKeyRef:
               name: app-config-secret
               key: PROMETHEUS_PORT
-
-        command: ["/bin/sh", "-c"]
-        args:
-          - |
-            echo "Debugging DB Variables:"
-            echo "DATABASE_USERNAME: $DATABASE_USERNAME"
-            echo "DATABASE_PASSWORD: $DATABASE_PASSWORD"
-            echo "DATABASE_HOST: $DATABASE_HOST"
-            echo "DATABASE_HOST_PORT: $DATABASE_HOST_PORT"
-            echo "DATABASE_NAME: $DATABASE_NAME"
-            echo "DATABASE_URL (se definida): $DATABASE_URL"
-            echo "Starting Node.js application..."
-            node dist/src/main.js
+        
+        command: ["node", "dist/src/main.js"] 
 
         resources:
           requests:
