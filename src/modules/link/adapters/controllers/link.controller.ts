@@ -49,7 +49,7 @@ export class LinkController {
   @ApiOperation({
     summary: 'Cria um novo link encurtado',
     description:
-      'Cria um link anônimo ou, se um token JWT for fornecido, associa o link ao usuário autenticado.'
+      'Cria um link anônimo ou, se um token JWT for fornecido, associa o link ao usuário autenticado'
   })
   @ApiBearerAuth()
   @ApiBody({ type: CreateShortenedLinkDto })

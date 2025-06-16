@@ -111,7 +111,8 @@ jobs:
 
       - name: Apply Kubernetes manifests
         run: |
-          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml --record
+          kubectl patch deployment url-shortener-deployment -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"kubectl.kubernetes.io/restartedAt\":\"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}}}}}"
           kubectl apply -f k8s/service.yaml
           kubectl apply -f k8s/ingress.yaml
 
