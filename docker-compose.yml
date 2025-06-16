@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.local-prod
     container_name: teddy-links-app
     restart: always
     env_file:
@@ -13,6 +15,7 @@ services:
       - db
     networks:
       - teddy-net
+    command: npm run start:dev
 
   db:
     image: postgres:15-alpine

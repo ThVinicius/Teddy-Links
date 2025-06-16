@@ -11,7 +11,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -24,9 +24,11 @@
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "migration:show": "typeorm-ts-node-commonjs migration:show -d src/database/data-source.ts",
     "migration:create": "typeorm-ts-node-commonjs migration:create src/database/migrations/NewMigration",
-    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
-    "docker:dev:build": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build",
-    "docker:migrate": "docker-compose exec app npm run migration:run",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down --volumes --rmi all",
+    "docker:logs": "docker compose logs -f app",
+    "docker:migrate": "docker compose exec app npm run migration:run",
+    "docker:exec-app": "docker compose exec app /bin/sh",
     "prepare": "husky"
   },
   "dependencies": {
