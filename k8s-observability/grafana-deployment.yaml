@@ -1,3 +1,4 @@
+# --- DEFINIÇÃO DO PERSISTENTVOLUMECLAIM (PVC) ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -9,8 +10,9 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi 
+      storage: 5Gi
 ---
+# --- DEFINIÇÃO DO DEPLOYMENT ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,6 +29,9 @@ spec:
       labels:
         app: grafana
     spec:
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
       containers:
         - name: grafana
           image: grafana/grafana:latest
@@ -35,9 +40,9 @@ spec:
               name: http
           env:
             - name: GF_SECURITY_ADMIN_USER
-              value: admin # Usuário admin do Grafana
+              value: admin
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: admin # Senha admin do Grafana
+              value: admin
             - name: GF_PATHS_PROVISIONING
               value: /etc/grafana/provisioning/datasources
           volumeMounts:
