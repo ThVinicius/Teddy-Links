@@ -17,6 +17,7 @@ spec:
       containers:
       - name: url-shortener
         image: YOUR_APP_IMAGE_PLACEHOLDER
+        command: ["node", "dist/src/main.js"]
         ports:
         - containerPort: 4000
         env:
@@ -109,12 +110,10 @@ spec:
             httpGet:
               path: /healthz
               port: 4000 
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             periodSeconds: 5      
             timeoutSeconds: 3     
-            failureThreshold: 3
-        
-        command: ["node", "dist/src/main.js"] 
+            failureThreshold: 3 
 
         resources:
           requests:
