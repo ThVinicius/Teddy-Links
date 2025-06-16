@@ -1,98 +1,140 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🧸 Teddy Links: Serviço de Encurtamento de URLs
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📄 Descrição
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+O **Teddy Links** é um serviço de encurtamento de URLs robusto e escalável, desenvolvido com **NestJS**. Ele permite que os usuários criem links encurtados, rastreiem seus cliques e gerenciem seus links.
 
-## Description
+O projeto segue uma arquitetura modular com foco em **DDD (Domain-Driven Design)** e inclui configurações para **observabilidade** (Prometheus, Grafana, Jaeger) e **CI/CD**.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## ✨ Funcionalidades
 
-## Project setup
+- **Encurtamento de URLs:** Crie facilmente URLs curtas a partir de URLs longas.
+- **Links Autenticados e Anônimos:** Usuários autenticados gerenciam seus links; anônimos podem usar rapidamente.
+- **Contagem de Cliques:** Rastreie acessos aos links encurtados.
+- **Gerenciamento de Links:** Usuários autenticados podem listar, atualizar e excluir links.
+- **Autenticação JWT:** Protege os endpoints com JSON Web Tokens.
+- **Persistência de Dados:** Integração com PostgreSQL usando TypeORM.
+- **Observabilidade:** Monitoramento com Prometheus e Grafana; rastreamento com Jaeger.
+- **CI/CD:** Configuração com GitHub Actions e deploy contínuo no GKE.
 
-```bash
-$ npm install
-```
+## 🧱 Arquitetura
 
-## Compile and run the project
+Arquitetura modular baseada em **DDD**, dividida em módulos como `Auth` e `Link`. Cada módulo tem:
 
-```bash
-# development
-$ npm run start
+- **Adapters:** Controladores (HTTP), DTOs, guards.
+- **Application:** Interfaces de domínio, entidades, casos de uso.
+- **Infrastructure:** Implementações reais (TypeORM, Bcrypt etc.).
 
-# watch mode
-$ npm run start:dev
+## ⚙️ Configuração do Projeto
 
-# production mode
-$ npm run start:prod
-```
+### 🔧 Pré-requisitos
 
-## Run tests
+- Node.js (20+)
+- Docker e Docker Compose
+- Conta GCP com GKE
+
+### 🛠️ Instalação
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone https://github.com/thvinicius/teddy-links.git
+cd teddy-links
+npm install
 ```
 
-## Deployment
+Crie `.env` com variáveis:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```env
+PORT=4000
+NODE_ENV=development
+DATABASE_TYPE=postgres
+DATABASE_HOST=localhost
+DATABASE_HOST_PORT=5432
+DATABASE_USERNAME=teddyuser
+DATABASE_PASSWORD=teddypassword
+DATABASE_NAME=teddylinksdb
+DATABASE_CONTAINER_PORT=5432
+USER_AUTH_JWT_SECRET=super-secret-jwt-key
+SENTRY_ENABLED=false
+SENTRY_DSN=
+OTEL_ENABLED=true
+OTEL_SERVICE_NAME=teddy-links-api
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
+METRICS_ENABLED=true
+PROMETHEUS_PORT=9090
+GRAFANA_PORT=3000
+```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## ▶️ Rodando o Projeto
+
+### Modo Desenvolvimento (Docker Compose)
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run docker:up
+npm run docker:logs
+npm run docker:down
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Migrações
 
-## Resources
+```bash
+npm run docker:migrate
+npm run migration:generate -- NomeDaMigracao
+npm run migration:generate:custom -- NomeCustom
+npm run migration:revert
+npm run migration:show
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### Sem Docker
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm run start:dev
+npm run start:prod
+```
 
-## Support
+## ✅ Testes
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm run test
+npm run test:cov
+npm run test:e2e
+```
 
-## Stay in touch
+## 🧹 Lint e Formatação
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npm run lint
+npm run format
+```
 
-## License
+## ⚡ Geração de Código com Plop
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+npm run create
+```
+
+Gerações disponíveis: módulo, service, controller, use-case, entidade.
+
+## 🚀 Deploy
+
+CI com `.github/workflows/ci.yml` e CD com `.github/workflows/deploy.yml` usando:
+
+- Terraform
+- Docker
+- Kubernetes
+- Artifact Registry
+
+## 📈 Observabilidade (somente em ambiente local)
+
+- **Prometheus:** Coleta métricas
+- **Grafana:** Visualização
+- **Jaeger:** Rastreamento distribuído
+
+## 🌐 URL da Aplicação em Produção
+
+A aplicação está disponível em produção (Kubernetes) no seguinte endereço:
+
+[http://34.132.136.220/](http://34.132.136.220/)
+
+## 📚 Documentação da API
+
+Disponível em: [http://localhost:4000/docs](http://localhost:4000/docs)
