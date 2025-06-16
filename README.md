@@ -31,7 +31,6 @@ Arquitetura modular baseada em **DDD**, dividida em módulos como `Auth` e `Link
 
 - Node.js (20+)
 - Docker e Docker Compose
-- Conta GCP com GKE
 
 ### 🛠️ Instalação
 
@@ -54,8 +53,6 @@ DATABASE_PASSWORD=teddypassword
 DATABASE_NAME=teddylinksdb
 DATABASE_CONTAINER_PORT=5432
 USER_AUTH_JWT_SECRET=super-secret-jwt-key
-SENTRY_ENABLED=false
-SENTRY_DSN=
 OTEL_ENABLED=true
 OTEL_SERVICE_NAME=teddy-links-api
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
@@ -76,6 +73,16 @@ npm run docker:down
 
 ### Migrações
 
+Rodar todas as migrações pendentes:
+
+```bash
+# Local
+npm run migration:run
+
+# Com Docker
+npm run docker:migrate
+```
+
 ```bash
 npm run docker:migrate
 npm run migration:generate -- NomeDaMigracao
@@ -95,8 +102,6 @@ npm run start:prod
 
 ```bash
 npm run test
-npm run test:cov
-npm run test:e2e
 ```
 
 ## 🧹 Lint e Formatação
@@ -128,6 +133,7 @@ CI com `.github/workflows/ci.yml` e CD com `.github/workflows/deploy.yml` usando
 - **Prometheus:** Coleta métricas
 - **Grafana:** Visualização
 - **Jaeger:** Rastreamento distribuído
+- Configurações em `k8s-observability/`
 
 ## 🌐 URL da Aplicação em Produção
 
@@ -137,4 +143,4 @@ A aplicação está disponível em produção (Kubernetes) no seguinte endereço
 
 ## 📚 Documentação da API
 
-Disponível em: [http://localhost:4000/docs](http://localhost:4000/docs)
+Disponível em: [http://34.132.136.220/docs](http://34.132.136.220/docs)
