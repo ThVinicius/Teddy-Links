@@ -103,6 +103,16 @@ spec:
             secretKeyRef:
               name: app-config-secret
               key: PROMETHEUS_PORT
+
+            
+        readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 4000 
+            initialDelaySeconds: 10
+            periodSeconds: 5      
+            timeoutSeconds: 3     
+            failureThreshold: 3
         
         command: ["node", "dist/src/main.js"] 
 
