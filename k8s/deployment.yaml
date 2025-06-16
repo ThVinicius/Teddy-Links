@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: url-shortener
-        image: YOUR_APP_IMAGE_PLACEHOLDER # Placeholder será substituído pela GitHub Action
+        image: YOUR_APP_IMAGE_PLACEHOLDER
         ports:
         - containerPort: 4000
         env:
