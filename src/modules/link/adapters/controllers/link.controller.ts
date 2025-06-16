@@ -108,7 +108,7 @@ export class LinkController {
     return { message: 'Link deleted successfully' };
   }
 
-  @Patch('link/:id')
+  @Patch('link')
   @UseGuards(JWTUserAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Atualiza a URL de destino de um link do usuário' })
