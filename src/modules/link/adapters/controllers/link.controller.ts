@@ -34,7 +34,7 @@ import { ILinkEntity } from '../../application/domain/entities/link.entity.inter
 import { JWTUserAuthGuard } from '../../../auth/adapters/guards/user-auth.guard';
 
 @ApiTags('Link')
-@Controller({ path: 'link' })
+@Controller()
 export class LinkController {
   constructor(
     private readonly createShortenedLinkUseCase: CreateShortenedLinkUseCase,
@@ -44,7 +44,7 @@ export class LinkController {
     private readonly userUpdateLinkUseCase: UserUpdateLinkUseCase
   ) {}
 
-  @Post('create')
+  @Post('link/create')
   @UseGuards(OptionalJWTUserAuthGuard)
   @ApiOperation({
     summary: 'Cria um novo link encurtado',
@@ -71,32 +71,7 @@ export class LinkController {
     return await this.createShortenedLinkUseCase.execute(body.link, userId);
   }
 
-  @Get(':code')
-  @Redirect('', HttpStatus.MOVED_PERMANENTLY)
-  @ApiOperation({
-    summary: 'Redireciona para a URL original e contabiliza o clique',
-    description: 'O status de retorno real é um 301 Moved Permanently.'
-  })
-  @ApiParam({
-    name: 'code',
-    description: 'O código de 6 caracteres do link.',
-    example: 'aZbKq7'
-  })
-  @ApiResponse({
-    status: 301,
-    description: 'Redirecionamento para a URL original.'
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'O link com o código fornecido não foi encontrado.',
-    type: BusinessErrorDocs
-  })
-  async findLink(@Param('code') code: string) {
-    const link = await this.redirectToOriginalUrlUseCase.execute(code);
-    return { url: link.original_url };
-  }
-
-  @Get('user/list')
+  @Get('link/user/list')
   @UseGuards(JWTUserAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lista todos os links do usuário autenticado' })
@@ -110,7 +85,7 @@ export class LinkController {
     return await this.userListLinkUseCase.execute(user.id);
   }
 
-  @Delete(':id')
+  @Delete('link/:id')
   @UseGuards(JWTUserAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -133,7 +108,7 @@ export class LinkController {
     return { message: 'Link deleted successfully' };
   }
 
-  @Patch(':id')
+  @Patch('link/:id')
   @UseGuards(JWTUserAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Atualiza a URL de destino de um link do usuário' })
@@ -159,5 +134,30 @@ export class LinkController {
     @GetUser() user: IUserEntity
   ): Promise<ILinkEntity> {
     return await this.userUpdateLinkUseCase.execute(body, user.id);
+  }
+
+  @Get(':code')
+  @Redirect('', HttpStatus.MOVED_PERMANENTLY)
+  @ApiOperation({
+    summary: 'Redireciona para a URL original e contabiliza o clique',
+    description: 'O status de retorno real é um 301 Moved Permanently.'
+  })
+  @ApiParam({
+    name: 'code',
+    description: 'O código de 6 caracteres do link.',
+    example: 'aZbKq7'
+  })
+  @ApiResponse({
+    status: 301,
+    description: 'Redirecionamento para a URL original.'
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'O link com o código fornecido não foi encontrado.',
+    type: BusinessErrorDocs
+  })
+  async findLink(@Param('code') code: string) {
+    const link = await this.redirectToOriginalUrlUseCase.execute(code);
+    return { url: link.original_url };
   }
 }
